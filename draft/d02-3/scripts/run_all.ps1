@@ -1,34 +1,58 @@
-# Script chạy tuần tự các demo Issue Triage trên Windows PowerShell
+# Script chay tuan tu cac demo Issue Triage tren Windows PowerShell
+# Cach su dung: .\run_all.ps1  hoac  powershell -ExecutionPolicy Bypass -File .\run_all.ps1
 $ErrorActionPreference = "Continue"
 
 Write-Host "==========================================================" -ForegroundColor Cyan
-Write-Host "  BẮT ĐẦU CHẠY CÁC DEMO ISSUE TRIAGE (SE373 - BTVN02)     " -ForegroundColor Cyan
+Write-Host "  BAT DAU CHAY CAC DEMO ISSUE TRIAGE (SE373 - BTVN#1)     " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# Ensure outputs folder exists
-$OutputDir = Join-Path (Get-Item .).Parent.FullName "outputs"
-if (-not (Test-Path $OutputDir)) {
-    New-Item -ItemType Directory -Path $OutputDir | Out-Null
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$RepoRoot = (Get-Item $ScriptDir).Parent.Parent.Parent.FullName
+$OutputDir = Join-Path $RepoRoot "outputs"
+$DraftOutputDir = Join-Path (Get-Item $ScriptDir).Parent.FullName "outputs"
+
+if (-not (Test-Path $OutputDir)) { New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null }
+if (-not (Test-Path $DraftOutputDir)) { New-Item -ItemType Directory -Path $DraftOutputDir -Force | Out-Null }
+
+function Run-Demo {
+    param([string]$Title, [string]$Cmd, [string]$OutputFile)
+    Write-Host "`n>>> $Title..." -ForegroundColor Yellow
+    $p1 = Join-Path $OutputDir "$OutputFile.txt"
+    $p2 = Join-Path $DraftOutputDir "$OutputFile.txt"
+    Invoke-Expression $Cmd | Tee-Object -FilePath $p1
+    Copy-Item $p1 -Destination $p2 -Force
 }
 
-Write-Host "`n[1/4] Chạy Demo 00: Minimal Triage (Prose Output)..." -ForegroundColor Yellow
-python 00_minimal_triage.py | Tee-Object -FilePath (Join-Path $OutputDir "00_minimal_triage.txt")
+# 1. Demo 00: Minimal Triage (co dau nhay kep quanh issue)
+Run-Demo "Demo 00: Minimal Triage" 'python 00_minimal_triage.py --issue "API dang nhap tra HTTP 503 cho toan bo nguoi dung tu 09:15."' "00_minimal_triage"
 
-Write-Host "`n[2/4] Chạy Demo 01: Đo lường Token EN vs VI (Offline)..." -ForegroundColor Yellow
-python 01_measure_tokens.py | Tee-Object -FilePath (Join-Path $OutputDir "01_measure_tokens.txt")
+# 2. Demo 01: Token Measurement & Stats
+Run-Demo "Demo 01: Token Measurement" "python 01_measure_tokens.py" "01_measure_tokens"
 
-Write-Host "`n[3/4] Chạy Demo 02: Structured Output & Invariant Validation..." -ForegroundColor Yellow
-python 02_structured_output.py | Tee-Object -FilePath (Join-Path $OutputDir "02_structured_output.txt")
+# 3. Demo 02: Structured Output 10 runs
+Run-Demo "Demo 02: Structured Output [10 runs]" "python 02_structured_output.py --runs 10" "02_structured_output"
 
-Write-Host "`n[4/4] Chạy Demo 03: Function Calling & 4-Stage Trace..." -ForegroundColor Yellow
-python 03_function_calling.py | Tee-Object -FilePath (Join-Path $OutputDir "03_function_calling.txt")
+# 4. Demo 02 Adversarial
+Run-Demo "Demo 02: Adversarial Injection" "python 02_structured_output.py --adversarial" "02_adversarial"
 
-Write-Host "`nChạy kiểm thử pytest (Offline)..." -ForegroundColor Yellow
-pytest -v | Tee-Object -FilePath (Join-Path $OutputDir "pytest.txt")
+# 5. Demo 03: Function Calling Default
+Run-Demo "Demo 03: Function Calling [Default]" "python 03_function_calling.py" "03_function_calling"
+
+# 6. Demo 03: Show Messages
+Run-Demo "Demo 03: Function Calling [--show-messages]" "python 03_function_calling.py --show-messages" "03_show_messages"
+
+# 7. Demo 03: Simulate Bad Call
+Run-Demo "Demo 03: Function Calling [--simulate-bad-call billing]" "python 03_function_calling.py --simulate-bad-call billing" "03_simulate_bad_call"
+
+# 8. Pytest Offline
+Write-Host "`n>>> Chay Pytest Test Suite (Offline)..." -ForegroundColor Yellow
+Push-Location $RepoRoot
+$pyOut = Join-Path $OutputDir "pytest.txt"
+pytest -v | Tee-Object -FilePath $pyOut
+Copy-Item $pyOut -Destination (Join-Path $DraftOutputDir "pytest.txt") -Force
+Pop-Location
 
 Write-Host "`n==========================================================" -ForegroundColor Green
-Write-Host "  HOÀN TẤT TẤT CẢ CÁC BƯỚC DEMO DÒNG LỆNH!                " -ForegroundColor Green
-Write-Host "  Kết quả đã được lưu tại thư mục outputs/                " -ForegroundColor Green
-Write-Host "  Để chạy Demo 04 giao diện UI, gõ:                       " -ForegroundColor Green
-Write-Host "  streamlit run 04_streamlit_triage.py                    " -ForegroundColor Green
+Write-Host "  HOAN TAT TAT CA CAC BUOC DEMO VA KIEM THU THANH CONG!   " -ForegroundColor Green
+Write-Host "  Tat ca log da duoc luu tai outputs/                     " -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green

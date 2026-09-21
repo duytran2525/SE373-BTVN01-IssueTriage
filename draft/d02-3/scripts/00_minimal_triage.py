@@ -7,7 +7,7 @@ import argparse
 import sys
 import time
 
-from demo_common import mask_secret, model_name, openai_client
+from demo_common import call_with_retry, mask_secret, model_name, openai_client
 from prompts import build_messages
 
 DEFAULT_ISSUE = "API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15."
@@ -38,10 +38,12 @@ def main() -> None:
 
     start_time = time.perf_counter()
     try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            temperature=0.2,
+        response = call_with_retry(
+            lambda: client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.2,
+            )
         )
     except Exception as err:
         print(f"[API ERROR] Gọi LLM thất bại: {err}", file=sys.stderr)

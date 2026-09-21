@@ -1,4 +1,4 @@
-﻿============================= test session starts =============================
+============================= test session starts =============================
 platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Duy\AppData\Local\Programs\Python\Python314\python.exe
 cachedir: .pytest_cache
 rootdir: C:\Users\Duy\SE373\BTVN02
@@ -25,4 +25,4 @@ tests/test_tools.py::test_unknown_tool_rejected PASSED                   [ 89%]
 tests/test_tools.py::test_malformed_json_arguments PASSED                [ 94%]
 tests/test_tools.py::test_tool_spec_synced_with_owners PASSED            [100%]
 
-============================= 19 passed in 0.91s ==============================
+============================= 19 passed in 0.81s ==============================

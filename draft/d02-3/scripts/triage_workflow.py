@@ -10,6 +10,12 @@ from openai import OpenAI
 
 from prompts import build_messages
 
+try:
+    from demo_common import call_with_retry
+except ImportError:
+    def call_with_retry(fn):
+        return fn()
+
 # Single Source of Truth for component owners
 COMPONENT_OWNERS: dict[str, str] = {
     "payment": "checkout-platform",
@@ -138,11 +144,13 @@ def triage_issue(
     messages: list[dict[str, Any]] = build_messages(issue, additional_system_note=system_note)
 
     # First call: ask model to analyze issue and trigger tool call
-    first_response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        tools=FUNCTION_TOOLS,
-        tool_choice="required" if force_tool else "auto",
+    first_response = call_with_retry(
+        lambda: client.chat.completions.create(
+            model=model,
+            messages=messages,
+            tools=FUNCTION_TOOLS,
+            tool_choice="required" if force_tool else "auto",
+        )
     )
 
     assistant_msg = first_response.choices[0].message
@@ -187,11 +195,13 @@ def triage_issue(
         )
 
     # Final call: model receives tool result and responds with final answer
-    final_response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        tools=FUNCTION_TOOLS,
-        tool_choice="none",  # Do not force tool loop again
+    final_response = call_with_retry(
+        lambda: client.chat.completions.create(
+            model=model,
+            messages=messages,
+            tools=FUNCTION_TOOLS,
+            tool_choice="none",  # Do not force tool loop again
+        )
     )
 
     final_text = final_response.choices[0].message.content or "(Model không trả về văn bản kết luận.)"

@@ -31,6 +31,10 @@ class MockToolCall:
 class MockMessage:
     content: str | None
     tool_calls: list[MockToolCall] | None = None
+    role: str = "assistant"
+
+    def __getitem__(self, item: str):
+        return getattr(self, item)
 
 
 @dataclass

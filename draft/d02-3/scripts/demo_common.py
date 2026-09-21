@@ -80,3 +80,31 @@ def openai_client(timeout: float = 60.0, max_retries: int = 2) -> OpenAI:
         timeout=timeout,
         max_retries=max_retries,
     )
+
+
+def call_with_retry(fn, attempts: int = 4, base_delay: float = 1.0, max_delay: float = 10.0):
+    """Execute a callable with exponential backoff and jitter on retryable API errors (429, 500, 502, 503, 504, timeout)."""
+    import random
+    import time
+    from openai import APIConnectionError, APITimeoutError, InternalServerError, RateLimitError
+
+    for attempt in range(1, attempts + 1):
+        try:
+            return fn()
+        except Exception as exc:
+            status_code = getattr(exc, "status_code", None)
+            is_retryable = False
+            if isinstance(exc, (RateLimitError, InternalServerError, APITimeoutError, APIConnectionError)):
+                is_retryable = True
+            elif status_code in (429, 500, 502, 503, 504):
+                is_retryable = True
+
+            if is_retryable and attempt < attempts:
+                delay = min(max_delay, base_delay * (2 ** (attempt - 1)) + random.uniform(0.1, 0.6))
+                print(
+                    f"⚠️ [RETRY] Lần {attempt}/{attempts} gặp lỗi {type(exc).__name__} (status={status_code}). Chờ {delay:.2f}s thử lại...",
+                    file=sys.stderr,
+                )
+                time.sleep(delay)
+            else:
+                raise

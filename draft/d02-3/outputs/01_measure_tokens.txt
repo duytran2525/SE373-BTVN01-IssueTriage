@@ -1,27 +1,42 @@
-﻿=== DEMO 01: SO S├üNH TOKEN H├ôA TIß║╛NG ANH V├Ç TIß║╛NG VIß╗åT ===
+=== DEMO 01: SO SÁNH TOKEN HÓA TIẾNG ANH VÀ TIẾNG VIỆT ===
 Tokenizer 1: cl100k_base (GPT-4 / GPT-3.5 turbo - ~100k vocab)
 Tokenizer 2: o200k_base  (GPT-4o / GPT-4o-mini - ~200k vocab)
 ========================================================================================
-ID   | Thß╗â loß║íi                 | Ng├┤n ngß╗» | K├╜ tß╗▒  | Bytes  | cl100k   | o200k    | Tß╗ë lß╗ç VI/EN (cl)   | Tß╗ë lß╗ç VI/EN (o2)  
+ID   | Thể loại                 | Ngôn ngữ | Ký tự  | Bytes  | cl100k   | o200k    | Tỉ lệ VI/EN (cl)   | Tỉ lệ VI/EN (o2)  
 -------------------------------------------------------------------------------------------------------------------
-C01  | C├óu ngß║»n / Short Alert   | EN       | 47     | 47     | 10       | 10       | 1.00               | 1.00              
-     | C├óu ngß║»n / Short Alert   | VI       | 57     | 69     | 28       | 18       | 2.80               | 1.80              
-C02  | M├┤ tß║ú issue / Issue Description | EN       | 122    | 122    | 29       | 29       | 1.00               | 1.00              
-     | M├┤ tß║ú issue / Issue Description | VI       | 137    | 171    | 58       | 40       | 2.00               | 1.38              
+C01  | Câu ngắn / Short Alert   | EN       | 47     | 47     | 10       | 10       | 1.00               | 1.00              
+     | Câu ngắn / Short Alert   | VI       | 57     | 69     | 28       | 18       | 2.80               | 1.80              
+C02  | Mô tả issue / Issue Description | EN       | 122    | 122    | 29       | 29       | 1.00               | 1.00              
+     | Mô tả issue / Issue Description | VI       | 137    | 171    | 58       | 40       | 2.00               | 1.38              
 C03  | Log & Stack Trace / Technical Log | EN       | 139    | 139    | 41       | 41       | 1.00               | 1.00              
      | Log & Stack Trace / Technical Log | VI       | 132    | 164    | 68       | 59       | 1.66               | 1.44              
-C04  | ─Éoß║ín kß╗╣ thuß║¡t d├ái / Incident Analysis | EN       | 231    | 231    | 38       | 37       | 1.00               | 1.00              
-     | ─Éoß║ín kß╗╣ thuß║¡t d├ái / Incident Analysis | VI       | 261    | 357    | 130      | 79       | 3.42               | 2.14              
-C05  | D├áy dß║Ñu thanh / Heavy Diacritics | EN       | 110    | 110    | 14       | 14       | 1.00               | 1.00              
-     | D├áy dß║Ñu thanh / Heavy Diacritics | VI       | 134    | 175    | 64       | 35       | 4.57               | 2.50              
-C06  | ─Éß╗ïnh danh & URL / Identifiers & URLs | EN       | 127    | 127    | 37       | 37       | 1.00               | 1.00              
-     | ─Éß╗ïnh danh & URL / Identifiers & URLs | VI       | 137    | 153    | 49       | 43       | 1.32               | 1.16              
+C04  | Đoạn kỹ thuật dài / Incident Analysis | EN       | 231    | 231    | 38       | 37       | 1.00               | 1.00              
+     | Đoạn kỹ thuật dài / Incident Analysis | VI       | 261    | 357    | 130      | 79       | 3.42               | 2.14              
+C05  | Dày dấu thanh / Heavy Diacritics | EN       | 110    | 110    | 14       | 14       | 1.00               | 1.00              
+     | Dày dấu thanh / Heavy Diacritics | VI       | 134    | 175    | 64       | 35       | 4.57               | 2.50              
+C06  | Định danh & URL / Identifiers & URLs | EN       | 127    | 127    | 37       | 37       | 1.00               | 1.00              
+     | Định danh & URL / Identifiers & URLs | VI       | 137    | 153    | 49       | 43       | 1.32               | 1.16              
 ===================================================================================================================
 
->>> ─É├ú xuß║Ñt dß╗» liß╗çu chi tiß║┐t ra file: outputs/01_tokens.csv
+=== BẢNG TỔNG HỢP THỐNG KÊ TOKEN (TÍNH TOÁN BẰNG CODE) ===
+1. Tỉ lệ VI/EN theo nhóm (cl100k_base): Min = 1.32, Max = 4.57, Mean = 2.63
+2. Tỉ lệ VI/EN theo nhóm (o200k_base) : Min = 1.16, Max = 2.50, Mean = 1.74
+3. Tổng token EN / VI (cl100k_base)   : 169 (EN) / 397 (VI) => Tỉ lệ gộp = 2.35
+4. Tổng token EN / VI (o200k_base)    : 168 (EN) / 274 (VI) => Tỉ lệ gộp = 1.63
+5. Mức giảm token tiếng Việt khi chuyển từ cl100k_base sang o200k_base:
+   • Nhóm C01: 28 -> 18 tokens (giảm 35.7%)
+   • Nhóm C02: 58 -> 40 tokens (giảm 31.0%)
+   • Nhóm C03: 68 -> 59 tokens (giảm 13.2%)
+   • Nhóm C04: 130 -> 79 tokens (giảm 39.2%)
+   • Nhóm C05: 64 -> 35 tokens (giảm 45.3%)
+   • Nhóm C06: 49 -> 43 tokens (giảm 12.2%)
+   => Mức giảm gộp toàn bộ 6 nhóm: 397 -> 274 tokens (giảm 31.0%)
+===================================================================================================================
 
-=== MINH Hß╗îA PH├éN Mß║óNH TOKEN (TOKEN FRAGMENTATION) TIß║╛NG VIß╗åT ===
-C├óu mß║½u: "Cß╗Ñm t├¼m kiß║┐m gß║╖p sß╗▒ cß╗æ"
+>>> Đã xuất dữ liệu chi tiết ra file: outputs/01_tokens.csv
+
+=== MINH HỌA PHÂN MẢNH TOKEN (TOKEN FRAGMENTATION) TIẾNG VIỆT ===
+Câu mẫu: "Cụm tìm kiếm gặp sự cố"
 
 1. cl100k_base (16 tokens):
    Token [00] ID=34     Raw bytes=b'C'
@@ -51,11 +66,11 @@ C├óu mß║½u: "Cß╗Ñm t├¼m kiß║┐m gß║╖p sß╗▒ cß╗æ"
    Token [06] ID=34912  Raw bytes=b' s\xe1\xbb\xb1'
    Token [07] ID=137746 Raw bytes=b' c\xe1\xbb\x91'
 
---- NHß║¼N X├ëT Hß╗îC THUß║¼T ---
-1. Tokenizer BPE hß╗ìc tr├¬n tß║¡p ngß╗» liß╗çu chß╗º yß║┐u l├á tiß║┐ng Anh. Do ─æ├│, c├íc tß╗½ tiß║┐ng Anh
-   th╞░ß╗¥ng t╞░╞íng ß╗⌐ng vß╗¢i 1 token (nguy├¬n tß╗½ hoß║╖c gß╗æc tß╗½ th├┤ng dß╗Ñng).
-2. Tiß║┐ng Viß╗çt sß╗¡ dß╗Ñng bß║úng m├ú UTF-8 nhiß╗üu byte (2-3 bytes/k├╜ tß╗▒ c├│ dß║Ñu). Vß╗¢i cl100k_base,
-   nhiß╗üu k├╜ tß╗▒ c├│ dß║Ñu bß╗ï ph├ón t├ích th├ánh c├íc mß║únh byte ─æ╞ín lß║╗, khiß║┐n sß╗æ token tiß║┐ng Viß╗çt
-   th╞░ß╗¥ng cao gß║Ñp 1.5 - 2.5 lß║ºn so vß╗¢i c├óu tiß║┐ng Anh c├╣ng ngh─⌐a.
-3. Tokenizer mß╗ƒ rß╗Öng o200k_base (200k tß╗½ vß╗▒ng) bß╗ò sung nhiß╗üu n-gram ─æa ng├┤n ngß╗» h╞ín,
-   gi├║p gom cß╗Ñm ├óm tiß║┐t tiß║┐ng Viß╗çt tß╗æt h╞ín, l├ám giß║úm ─æ├íng kß╗â tß╗ë lß╗ç VI/EN token.
+--- NHẬN XÉT HỌC THUẬT ---
+1. Tokenizer BPE học trên tập ngữ liệu chủ yếu là tiếng Anh. Do đó, các từ tiếng Anh
+   thường tương ứng với 1 token (nguyên từ hoặc gốc từ thông dụng).
+2. Tiếng Việt sử dụng bảng mã UTF-8 nhiều byte (2-3 bytes/ký tự có dấu). Với cl100k_base,
+   nhiều ký tự có dấu bị phân tách thành các mảnh byte đơn lẻ, khiến số token tiếng Việt
+   thường cao gấp 1.5 - 2.5 lần so với câu tiếng Anh cùng nghĩa.
+3. Tokenizer mở rộng o200k_base (200k từ vựng) bổ sung nhiều n-gram đa ngôn ngữ hơn,
+   giúp gom cụm âm tiết tiếng Việt tốt hơn, làm giảm đáng kể tỉ lệ VI/EN token.

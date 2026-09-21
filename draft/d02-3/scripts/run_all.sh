@@ -1,29 +1,57 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Script chạy tuần tự các demo Issue Triage trên Linux / macOS
+# Sử dụng: ./run_all.sh
+set -e
 
 echo "=========================================================="
-echo "  BẮT ĐẦU CHẠY CÁC DEMO ISSUE TRIAGE (SE373 - BTVN02)     "
+echo "  BẮT ĐẦU CHẠY CÁC DEMO ISSUE TRIAGE (SE373 - BTVN#1)     "
 echo "=========================================================="
 
-OUTPUT_DIR="../outputs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+OUTPUT_DIR="$REPO_ROOT/outputs"
+DRAFT_OUTPUT_DIR="$SCRIPT_DIR/../outputs"
+
 mkdir -p "$OUTPUT_DIR"
+mkdir -p "$DRAFT_OUTPUT_DIR"
 
-echo -e "\n[1/4] Chạy Demo 00: Minimal Triage..."
-python3 00_minimal_triage.py | tee "$OUTPUT_DIR/00_minimal_triage.txt"
+run_and_save() {
+    local name="$1"
+    local cmd="$2"
+    local file_base="$3"
+    echo -e "\n>>> $name..."
+    eval "$cmd" | tee "$OUTPUT_DIR/${file_base}.txt"
+    cp "$OUTPUT_DIR/${file_base}.txt" "$DRAFT_OUTPUT_DIR/${file_base}.txt"
+}
 
-echo -e "\n[2/4] Chạy Demo 01: Token Measurement (Offline)..."
-python3 01_measure_tokens.py | tee "$OUTPUT_DIR/01_measure_tokens.txt"
+# 1. Demo 00
+run_and_save "Demo 00: Minimal Triage" 'python 00_minimal_triage.py --issue "API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15."' "00_minimal_triage"
 
-echo -e "\n[3/4] Chạy Demo 02: Structured Output & Validation..."
-python3 02_structured_output.py | tee "$OUTPUT_DIR/02_structured_output.txt"
+# 2. Demo 01
+run_and_save "Demo 01: Token Measurement" "python 01_measure_tokens.py" "01_measure_tokens"
 
-echo -e "\n[4/4] Chạy Demo 03: Function Calling & Trace..."
-python3 03_function_calling.py | tee "$OUTPUT_DIR/03_function_calling.txt"
+# 3. Demo 02
+run_and_save "Demo 02: Structured Output (10 runs)" "python 02_structured_output.py --runs 10" "02_structured_output"
 
-echo -e "\nChạy kiểm thử pytest (Offline)..."
+# 4. Demo 02 Adversarial
+run_and_save "Demo 02: Adversarial Injection" "python 02_structured_output.py --adversarial" "02_adversarial"
+
+# 5. Demo 03 Default
+run_and_save "Demo 03: Function Calling (Mặc định)" "python 03_function_calling.py" "03_function_calling"
+
+# 6. Demo 03 Show Messages
+run_and_save "Demo 03: Function Calling (--show-messages)" "python 03_function_calling.py --show-messages" "03_show_messages"
+
+# 7. Demo 03 Simulate Bad Call
+run_and_save "Demo 03: Function Calling (--simulate-bad-call billing)" "python 03_function_calling.py --simulate-bad-call billing" "03_simulate_bad_call"
+
+# 8. Pytest Offline
+echo -e "\n>>> Chạy Pytest Test Suite (Offline)..."
+cd "$REPO_ROOT"
 pytest -v | tee "$OUTPUT_DIR/pytest.txt"
+cp "$OUTPUT_DIR/pytest.txt" "$DRAFT_OUTPUT_DIR/pytest.txt"
 
-echo -e "\n=========================================================="
-echo "  HOÀN TẤT DEMO CLI. Mở UI bằng lệnh:                     "
-echo "  streamlit run 04_streamlit_triage.py                    "
+echo "=========================================================="
+echo "  HOÀN TẤT TẤT CẢ CÁC BƯỚC DEMO VÀ KIỂM THỬ THÀNH CÔNG!   "
+echo "  Tất cả log đã được lưu tại outputs/                     "
 echo "=========================================================="

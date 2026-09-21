@@ -164,6 +164,38 @@ def main() -> None:
 
     print("=" * 115)
 
+    # Compute statistical summary
+    vi_records = [r for r in records if r["lang"] == "VI"]
+    en_records = [r for r in records if r["lang"] == "EN"]
+
+    ratios_cl = [r["vi_en_ratio_cl100k"] for r in vi_records]
+    ratios_o2 = [r["vi_en_ratio_o200k"] for r in vi_records]
+
+    total_en_cl = sum(r["tokens_cl100k"] for r in en_records)
+    total_vi_cl = sum(r["tokens_cl100k"] for r in vi_records)
+    pooled_cl = total_vi_cl / total_en_cl
+
+    total_en_o2 = sum(r["tokens_o200k"] for r in en_records)
+    total_vi_o2 = sum(r["tokens_o200k"] for r in vi_records)
+    pooled_o2 = total_vi_o2 / total_en_o2
+
+    pooled_reduction = ((total_vi_cl - total_vi_o2) / total_vi_cl) * 100.0
+
+    print("\n=== BẢNG TỔNG HỢP THỐNG KÊ TOKEN (TÍNH TOÁN BẰNG CODE) ===")
+    print(f"1. Tỉ lệ VI/EN theo nhóm (cl100k_base): Min = {min(ratios_cl):.2f}, Max = {max(ratios_cl):.2f}, Mean = {sum(ratios_cl)/len(ratios_cl):.2f}")
+    print(f"2. Tỉ lệ VI/EN theo nhóm (o200k_base) : Min = {min(ratios_o2):.2f}, Max = {max(ratios_o2):.2f}, Mean = {sum(ratios_o2)/len(ratios_o2):.2f}")
+    print(f"3. Tổng token EN / VI (cl100k_base)   : {total_en_cl} (EN) / {total_vi_cl} (VI) => Tỉ lệ gộp = {pooled_cl:.2f}")
+    print(f"4. Tổng token EN / VI (o200k_base)    : {total_en_o2} (EN) / {total_vi_o2} (VI) => Tỉ lệ gộp = {pooled_o2:.2f}")
+    print(f"5. Mức giảm token tiếng Việt khi chuyển từ cl100k_base sang o200k_base:")
+    for v in vi_records:
+        cid = v["id"]
+        c_cl = v["tokens_cl100k"]
+        c_o2 = v["tokens_o200k"]
+        red = ((c_cl - c_o2) / c_cl) * 100.0
+        print(f"   • Nhóm {cid}: {c_cl} -> {c_o2} tokens (giảm {red:.1f}%)")
+    print(f"   => Mức giảm gộp toàn bộ 6 nhóm: {total_vi_cl} -> {total_vi_o2} tokens (giảm {pooled_reduction:.1f}%)")
+    print("=" * 115)
+
     # Save output CSV to outputs directory
     for out_dir in [
         SCRIPT_DIRECTORY.parent / "outputs",

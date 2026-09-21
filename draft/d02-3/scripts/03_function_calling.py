@@ -37,7 +37,7 @@ def main() -> None:
 
     # Simulation mode (offline test of security boundary)
     if args.simulate_bad_call:
-        print(f"\n[SIMULATION] Thử nghiệm tiêm tool proposal không hợp lệ: component={args.simulate_bad_call!r}")
+        print(f"\n[SIMULATED] Thử nghiệm tiêm tool proposal không hợp lệ: component={args.simulate_bad_call!r}")
         print("1. Giả lập Model gửi tool call:")
         raw_args = json.dumps({"component": args.simulate_bad_call})
         print(f"   get_component_owner(component={args.simulate_bad_call!r})")
@@ -94,14 +94,29 @@ def main() -> None:
     if args.show_messages:
         print("\n[CHI TIẾT CONVERSATION MESSAGES]:")
         for i, m in enumerate(result.messages):
-            role = m.get("role", "")
+            if hasattr(m, "role"):
+                role = m.role
+                content = m.content
+                tool_calls = m.tool_calls
+                tool_call_id = getattr(m, "tool_call_id", None)
+            else:
+                role = m.get("role", "")
+                content = m.get("content")
+                tool_calls = m.get("tool_calls")
+                tool_call_id = m.get("tool_call_id")
+
             print(f"\n--- Message [{i}] (Role: {role}) ---")
-            if "content" in m and m["content"]:
-                print(f"Content: {m['content']}")
-            if "tool_calls" in m:
-                print(f"Tool Calls: {json.dumps(m['tool_calls'], ensure_ascii=False)}")
-            if "tool_call_id" in m:
-                print(f"Tool Call ID: {m['tool_call_id']}")
+            if content:
+                print(f"Content: {content}")
+            if tool_calls:
+                tc_repr = [
+                    {"id": tc.id, "name": tc.function.name, "arguments": tc.function.arguments}
+                    if hasattr(tc, "function") else tc
+                    for tc in tool_calls
+                ]
+                print(f"Tool Calls: {json.dumps(tc_repr, ensure_ascii=False)}")
+            if tool_call_id:
+                print(f"Tool Call ID: {tool_call_id}")
 
 
 if __name__ == "__main__":
