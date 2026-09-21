@@ -1,0 +1,18 @@
+=== DEMO 00: LLM TRIAGE TỐI THIỂU (PROSE OUTPUT) ===
+Model ID : gemini-3.5-flash-lite
+Issue    : API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15.
+------------------------------------------------------------
+Độ trễ phản hồi : 21.29 giây
+Token Usage     : prompt=313, completion=94, total=407
+------------------------------------------------------------
+KẾT QUẢ TRIAGE (VĂN BẢN TỰ DO):
+Dưới đây là kết quả phân loại sự cố dựa trên thông tin được cung cấp:
+
+```json
+{
+  "component": "identity",
+  "severity": "P0",
+  "needs_urgent_response": true,
+  "summary": "API đăng nhập trả lỗi HTTP 503 trên diện rộng từ 09:15, làm gián đoạn dịch vụ xác thực của người dùng."
+}
+```

@@ -1,0 +1,76 @@
+=== DEMO 02: SO SÁNH PROMPT-ONLY JSON VÀ STRUCTURED OUTPUT CÓ APPLICATION VALIDATION ===
+Issue: 'Nút thanh toán trả HTTP 500 với mọi thẻ Visa từ 14:30.'
+Cấu hình: runs=10, temperature=0.0
+========================================================================================
+
+[PHẦN C - OFFLINE] KIỂM CHỨNG TỰ ĐỘNG CỦA APPLICATION (NEGATIVE CONTROLS)
+Mục đích: Chứng minh application độc lập bảo vệ hệ thống trước payload sai ngữ nghĩa.
+----------------------------------------------------------------------------------------
+• Thử nghiệm: Fixture 1 - Enum không hợp lệ (severity='Critical' thay vì P0..P3)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối:
+     - [severity]: Input should be 'P0', 'P1', 'P2' or 'P3'
+• Thử nghiệm: Fixture 2 - Thiếu trường bắt buộc ('reason' bị thiếu)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối:
+     - [reason]: Field required
+• Thử nghiệm: Fixture 3 - Vi phạm bất biến liên trường (P0 nhưng needs_urgent_response=False)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối:
+     - []: Value error, Lỗi bất biến liên trường (cross-field invariant): Khi severity='P0', needs_urgent_response bắt buộc phải là True.
+----------------------------------------------------------------------------------------
+
+[PHẦN A] PROMPT-ONLY JSON (Thử nghiệm 10 lần - Nhiệt độ T=0.0)
+Mô tả: Chỉ yêu cầu model trả JSON bằng prompt, không dùng constrained decoding.
+----------------------------------------------------------------------------------------
+Run   Phần     T     Nhãn kết quả       Độ trễ     Trích xuất raw output / lỗi
+----------------------------------------------------------------------------------------
+1     Phần A   0.0   OK                 1.63      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+2     Phần A   0.0   OK                 14.55     s {"status": "classified", "severity": "P0", "component": "payment", "ne
+3     Phần A   0.0   OK                 2.24      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+4     Phần A   0.0   OK                 1.96      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+5     Phần A   0.0   OK                 1.71      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+6     Phần A   0.0   OK                 1.41      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+7     Phần A   0.0   OK                 1.31      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+8     Phần A   0.0   OK                 1.62      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+9     Phần A   0.0   OK                 1.22      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+10    Phần A   0.0   OK                 1.37      s {"status": "classified", "severity": "P0", "component": "payment", "ne
+----------------------------------------------------------------------------------------
+Tóm tắt Phần A: Hợp lệ = 10/10 (100.0%) [Mẫu hợp lệ không tính 0 lỗi hạ tầng API_ERROR]
+
+[PHẦN B] STRUCTURED OUTPUT KÈM APPLICATION VALIDATION (10 lần - T=0.0)
+Mô tả: Sử dụng response_format kèm model_validate_json ở phía application.
+----------------------------------------------------------------------------------------
+Run   Phần     T     Nhãn kết quả       Độ trễ     Trích xuất raw output / lỗi
+----------------------------------------------------------------------------------------
+1     Phần B   0.0   OK                 3.93      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+2     Phần B   0.0   OK                 1.36      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+3     Phần B   0.0   OK                 1.38      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+4     Phần B   0.0   OK                 1.26      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+5     Phần B   0.0   OK                 1.35      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+6     Phần B   0.0   OK                 1.28      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+7     Phần B   0.0   OK                 1.25      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+8     Phần B   0.0   OK                 1.59      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+9     Phần B   0.0   OK                 30.23     s {   "status": "classified",   "severity": "P0",   "component": "paymen
+10    Phần B   0.0   OK                 1.31      s {   "status": "classified",   "severity": "P0",   "component": "paymen
+----------------------------------------------------------------------------------------
+Tóm tắt Phần B: Hợp lệ = 10/10 (100.0%) [Mẫu hợp lệ không tính 0 lỗi hạ tầng API_ERROR]
+
+CHI TIẾT ĐỐI TƯỢNG PYDANTIC HỢP LỆ CUỐI CÙNG (Phần B):
+{
+  "status": "classified",
+  "severity": "P0",
+  "component": "payment",
+  "needs_urgent_response": true,
+  "reason": "Sự cố gây gián đoạn toàn bộ giao dịch thanh toán bằng thẻ Visa, làm tê liệt tính năng thanh toán chính của hệ thống."
+}
+  • Trạng thái (status)             : classified
+  • Mức độ nghiêm trọng (severity)  : P0
+  • Phân hệ phụ trách (component)   : payment
+  • Cần ứng cứu khẩn cấp            : True
+  • Căn cứ phân loại (reason)       : Sự cố gây gián đoạn toàn bộ giao dịch thanh toán bằng thẻ Visa, làm tê liệt tính năng thanh toán chính của hệ thống.
+
+[OK] Đã ghi kết quả thử nghiệm chi tiết vào: C:\Users\Duy\SE373\BTVN02\outputs\02_results.csv
+========================================================================================
+
+[STDERR]
+⚠️ [RETRY] Lần 1/4 gặp lỗi RateLimitError (status=429). Chờ 1.42s thử lại...
+⚠️ [RETRY] Lần 2/4 gặp lỗi RateLimitError (status=429). Chờ 2.35s thử lại...
+⚠️ [RETRY] Lần 3/4 gặp lỗi RateLimitError (status=429). Chờ 4.53s thử lại...

@@ -27,3 +27,6 @@ Thumbs.db
 *.tmp
 outputs/*.tmp
 .playwright-mcp/
+screenshots/*.html
+report/report_filled.html
+

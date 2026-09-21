@@ -25,4 +25,4 @@ tests/test_tools.py::test_unknown_tool_rejected PASSED                   [ 89%]
 tests/test_tools.py::test_malformed_json_arguments PASSED                [ 94%]
 tests/test_tools.py::test_tool_spec_synced_with_owners PASSED            [100%]
 
-============================= 19 passed in 0.89s ==============================
+============================= 19 passed in 0.81s ==============================

@@ -1,0 +1,38 @@
+=== DEMO 03: FUNCTION CALLING & 4-STAGE TRACE (R5, R6) ===
+Mô hình: Model đề xuất (propose) -> Application kiểm soát và thực thi (execute)
+---------------------------------------------------------------------------
+Issue: Nút thanh toán trả HTTP 500 với mọi thẻ Visa từ 14:30. Hãy triage issue và cho biết team nào cần xử lý.
+===========================================================================
+
+=== 1. Model đề xuất tool call (Stage 1: tool_call #1) ===
+{
+  "call_id": "call_2726495",
+  "tool_name": "get_component_owner",
+  "arguments": {
+    "component": "payment"
+  }
+}
+
+=== 2. Application thực thi (Stage 2: application executes) ===
+   [Thẩm định allowlist: 'payment' in ['payment', 'identity', 'search']] -> Hợp lệ ✔
+   get_component_owner('payment') -> 'checkout-platform'
+
+=== 3. Tool result quay lại model (Stage 3: tool_result) ===
+{
+  "component": "payment",
+  "owner": "checkout-platform",
+  "status": "success"
+}
+
+=== 4. Final response từ model (Stage 4: final response) ===
+Dựa trên mô tả sự cố được cung cấp, tôi xin thực hiện phân loại issue (Issue Triage) như sau:
+
+- **Component (Phân hệ):** payment
+- **Severity (Mức độ nghiêm trọng):** P0 (Sự cố gián đoạn dịch vụ thanh toán diện rộng, ảnh hưởng trực tiếp đến tất cả các giao dịch sử dụng thẻ Visa từ 14:30).
+- **Needs Urgent Response (Cần phản hồi khẩn cấp):** true (Vì mức độ nghiêm trọng là P0).
+- **Owner Team (Team kỹ thuật phụ trách):** checkout-platform
+- **Hướng xử lý tiếp theo:** 
+  1. Cảnh báo ngay cho team `checkout-platform` và bộ phận SRE kiểm tra log hệ thống liên quan đến cổng thanh toán Visa từ thời điểm 14:30.
+  2. Kiểm tra trạng thái kết nối với bên thứ ba (đơn vị trung gian thanh toán / ngân hàng phát hành thẻ).
+  3. Tiến hành rollback nếu gần đây có bản cập nhật (deploy) liên quan đến module thanh toán.
+===========================================================================

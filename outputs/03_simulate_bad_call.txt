@@ -1,0 +1,19 @@
+=== DEMO 03: FUNCTION CALLING & 4-STAGE TRACE (R5, R6) ===
+Mô hình: Model đề xuất (propose) -> Application kiểm soát và thực thi (execute)
+---------------------------------------------------------------------------
+
+[SIMULATED] Thử nghiệm tiêm tool proposal không hợp lệ: component='billing'
+1. Giả lập Model gửi tool call:
+   get_component_owner(component='billing')
+
+2. Application thẩm tra và thực thi (Treating model as untrusted input):
+   Kết quả từ Application: {
+  "error": "Component 'billing' không tồn tại trong allowlist hệ thống.",
+  "allowed_components": [
+    "payment",
+    "identity",
+    "search"
+  ]
+}
+
+=> Cơ chế bảo mật: Application chặn thành công lời gọi bất hợp pháp mà không làm sập tiến trình.

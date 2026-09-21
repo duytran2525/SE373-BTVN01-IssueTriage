@@ -1,7 +1,8 @@
-"""Utility to render terminal command executions into crisp, high-resolution terminal screenshot PNGs."""
+"""Utility to render terminal command executions into authentic Windows Terminal screenshots."""
 
 from __future__ import annotations
 
+import html
 from pathlib import Path
 import subprocess
 
@@ -12,109 +13,171 @@ SCREENSHOTS_DIR.mkdir(parents=True, exist_ok=True)
 CHROME_EXE = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
 
 
-def render_terminal_to_png(title: str, command: str, output_text: str, output_png_path: Path, width: int = 1400) -> None:
-    """Render terminal text into a professional terminal mockup and screenshot with headless Chrome."""
-    import html
-
-    escaped_title = html.escape(title)
+def render_terminal_to_png(
+    prompt_dir: str,
+    command: str,
+    output_text: str,
+    output_png_path: Path,
+    width: int = 1500,
+    tab_title: str = "Administrator: Windows PowerShell",
+) -> None:
+    """Render terminal text into a crisp, authentic Windows Terminal screenshot."""
+    escaped_prompt_dir = html.escape(prompt_dir)
     escaped_cmd = html.escape(command)
     escaped_out = html.escape(output_text)
+    escaped_tab = html.escape(tab_title)
 
     html_content = f"""<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <style>
+  * {{
+    box-sizing: border-box;
+  }}
   body {{
     margin: 0;
-    padding: 30px;
-    background: #0f172a;
-    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    padding: 16px;
+    background: #181818;
+    font-family: Consolas, 'Cascadia Mono', 'Segoe UI', monospace;
     display: flex;
     justify-content: center;
     align-items: flex-start;
   }}
   .window {{
-    width: {width - 60}px;
-    background: #181825;
-    border-radius: 12px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-    border: 1px solid #313244;
+    width: {width}px;
+    background: #0c0c0c;
+    border-radius: 8px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+    border: 1px solid #333333;
     overflow: hidden;
   }}
   .titlebar {{
-    background: #11111b;
-    padding: 12px 18px;
+    background: #202020;
+    height: 36px;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #313244;
+    justify-content: space-between;
+    padding-left: 10px;
+    border-bottom: 1px solid #2d2d2d;
+    user-select: none;
   }}
-  .buttons {{
+  .tab {{
+    background: #0c0c0c;
+    color: #ffffff;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
     display: flex;
+    align-items: center;
     gap: 8px;
+    border-top: 2px solid #0078d4;
   }}
-  .btn {{
-    width: 13px;
-    height: 13px;
-    border-radius: 50%;
+  .tab-icon {{
+    font-size: 11px;
+    color: #4cc2ff;
   }}
-  .btn-red {{ background: #f38ba8; }}
-  .btn-yellow {{ background: #f9e2af; }}
-  .btn-green {{ background: #a6e3a1; }}
-  .title {{
-    flex: 1;
-    text-align: center;
-    color: #a6adc8;
-    font-size: 13px;
-    font-weight: 600;
+  .window-controls {{
+    display: flex;
+    height: 100%;
+  }}
+  .win-btn {{
+    width: 44px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cccccc;
+    font-size: 12px;
   }}
   .terminal-body {{
-    padding: 22px 26px;
-    color: #cdd6f4;
-    font-size: 14px;
-    line-height: 1.6;
+    padding: 16px 20px 24px 20px;
+    color: #cccccc;
+    font-size: 13.5px;
+    line-height: 1.45;
     white-space: pre-wrap;
-    word-break: break-word;
+    word-break: break-all;
+    background: #0c0c0c;
   }}
   .prompt-line {{
-    color: #89b4fa;
-    margin-bottom: 12px;
-    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 6px;
+    font-weight: normal;
   }}
-  .prompt-symbol {{
-    color: #a6e3a1;
+  .prompt-path {{
+    color: #ffffff;
+  }}
+  .prompt-cmd {{
+    color: #ffffff;
+  }}
+  .output-content {{
+    color: #cccccc;
   }}
 </style>
 </head>
 <body>
 <div class="window">
   <div class="titlebar">
-    <div class="buttons">
-      <div class="btn btn-red"></div>
-      <div class="btn btn-yellow"></div>
-      <div class="btn btn-green"></div>
+    <div class="tab">
+      <span class="tab-icon">▶</span>
+      <span>{escaped_tab}</span>
     </div>
-    <div class="title">{escaped_title}</div>
+    <div class="window-controls">
+      <div class="win-btn">&#x2014;</div>
+      <div class="win-btn">&#x25A2;</div>
+      <div class="win-btn" style="color: #ffffff;">&#x2715;</div>
+    </div>
   </div>
   <div class="terminal-body">
-    <div class="prompt-line"><span class="prompt-symbol">duy@uit-agentic:~/BTVN02/draft/d02-3/scripts$</span> {escaped_cmd}</div>
-{escaped_out}
+    <div class="prompt-line"><span class="prompt-path">PS {escaped_prompt_dir}&gt;</span> <span class="prompt-cmd">{escaped_cmd}</span></div>
+    <div class="output-content">{escaped_out}</div>
   </div>
 </div>
 </body>
 </html>"""
 
-    temp_html = output_png_path.parent / f"{output_png_path.stem}.html"
-    temp_html.write_text(html_content, encoding="utf-8")
+    est_lines = max(len(output_text.splitlines()), 5)
+    est_height = max(240, min(2400, est_lines * 22 + 160))
 
-    # Run Chrome screenshot
+    html_file = output_png_path.with_suffix(".html")
+    html_file.write_text(html_content, encoding="utf-8")
+
     cmd = [
         CHROME_EXE,
-        "--headless",
+        "--headless=new",
         "--disable-gpu",
-        f"--window-size={width},1100",
+        "--hide-scrollbars",
+        f"--window-size={width + 50},{est_height}",
         f"--screenshot={output_png_path.resolve()}",
-        str(temp_html.resolve()),
+        str(html_file.resolve()),
     ]
-    subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    print(f"Captured screenshot: {output_png_path} ({output_png_path.stat().st_size / 1024:.1f} KB)")
+    subprocess.run(cmd, check=True)
+
+    # Automatically crop any trailing blank background using PIL
+    try:
+        from PIL import Image
+
+        im = Image.open(output_png_path)
+        w, h = im.size
+        pixels = im.load()
+        bg = pixels[w // 2, h - 1]
+        last_row = h - 1
+        for y in range(h - 1, 0, -1):
+            # Sample horizontally across the window area
+            diff = False
+            for x in range(30, w - 30, 8):
+                px = pixels[x, y]
+                if abs(px[0] - bg[0]) > 4 or abs(px[1] - bg[1]) > 4 or abs(px[2] - bg[2]) > 4:
+                    diff = True
+                    break
+            if diff:
+                last_row = y
+                break
+        cropped_height = min(h, last_row + 16)
+        if cropped_height < h:
+            cropped = im.crop((0, 0, w, cropped_height))
+            cropped.save(output_png_path)
+    except Exception as e:
+        print(f"Warning: PIL crop failed for {output_png_path.name}: {e}")
+

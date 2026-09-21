@@ -1,7 +1,7 @@
 # BÀI TẬP VỀ NHÀ #1 — ISSUE TRIAGE MINI-APP
 **Môn học:** SE373 — Kỹ thuật xây dựng hệ thống Agentic AI (Buổi 02)  
-**Sinh viên:** Trần Đình Duy — **MSSV:** 24520398 — **Lớp:** SE373.R11  
-**Giảng viên hướng dẫn:** Bộ môn Công nghệ Phần mềm — UIT
+**Sinh viên:** Trần Đình Duy — **MSSV:** 24520398 — **Lớp học phần:** SE373.R11  
+**Khoa:** Kỹ thuật Phần mềm — Trường Đại học Công nghệ Thông tin, ĐHQG-HCM  
 
 ---
 
@@ -21,39 +21,53 @@ Dự án hiện thực một ứng dụng **Issue Triage mini-app** theo mô hì
 
 ---
 
-## 2. Cấu trúc thư mục
+## 2. Cấu trúc thư mục dự án
 
 ```
-BTVN02/
+SE373-BTVN01-IssueTriage/
 ├── README.md                      # Tài liệu hướng dẫn toàn diện
 ├── .gitignore                     # Bảo vệ secret (.env, .venv, cache)
 ├── draft/
 │   └── d02-3/
+│       ├── outputs/               # Bản sao log và dữ liệu đo đạc
 │       └── scripts/
 │           ├── .env.example       # Mẫu cấu hình môi trường (an toàn)
 │           ├── requirements.txt   # Danh sách thư viện phụ thuộc
-│           ├── demo_common.py     # Nạp cấu hình, client OpenAI, che giấu key an toàn
+│           ├── demo_common.py     # Nạp cấu hình, client OpenAI, retry và che giấu key
 │           ├── prompts.py         # Prompt template và cơ chế phòng chống prompt injection
 │           ├── schemas.py         # Schema Pydantic và ràng buộc ngữ nghĩa application
 │           ├── triage_workflow.py # Quy trình Agentic tool loop và kiểm soát an ninh tool
 │           ├── 00_minimal_triage.py    # Demo 00: Prose output tối thiểu
-│           ├── 01_measure_tokens.py    # Demo 01: Đo lường token EN vs VI (offline)
-│           ├── 02_structured_output.py # Demo 02: So sánh prompt-only vs structured output
+│           ├── 01_measure_tokens.py    # Demo 01: Đo lường token EN vs VI & thống kê (offline)
+│           ├── 02_structured_output.py # Demo 02: So sánh prompt-only vs structured output (10 runs)
 │           ├── 03_function_calling.py  # Demo 03: CLI function calling & 4-stage trace
 │           ├── 04_streamlit_triage.py  # Demo 04: UI Streamlit hoàn chỉnh
 │           ├── run_all.ps1        # Script tự động hóa PowerShell trên Windows
 │           └── run_all.sh         # Script tự động hóa Shell trên Linux/macOS
-├── tests/                         # Bộ kiểm thử tự động offline (100% không cần API)
+├── tests/                         # Bộ kiểm thử tự động offline (19/19 passed)
 │   ├── test_schema.py             # Kiểm thử validation Pydantic và invariant
 │   ├── test_prompts.py            # Kiểm thử phân tách prompt và chặn injection
 │   ├── test_tools.py              # Kiểm thử thẩm tra allowlist tool của application
 │   └── test_tool_loop.py          # Kiểm thử mock chu trình 4 giai đoạn tool loop
-├── outputs/                       # Lưu trữ output thật của các lần chạy (.txt, .csv)
+├── outputs/                       # Lưu trữ output thật của các lần chạy (.txt, .csv, .json)
+│   ├── run_meta.json              # Thông tin môi trường, runtime và model ID
+│   ├── 00_minimal_triage.txt      # Log thực thi Demo 00
+│   ├── 01_measure_tokens.txt     # Log phân tích và bảng thống kê token Demo 01
 │   ├── 01_tokens.csv              # Dữ liệu đo lường 6 cặp ngữ liệu EN-VI
+│   ├── 02_structured_output.txt  # Log chi tiết 10 runs Part A và Part B Demo 02
+│   ├── 02_results.csv             # Kết quả từng lần chạy Demo 02
+│   ├── 02_adversarial.txt        # Kết quả thử nghiệm prompt injection Demo 02
+│   ├── 03_function_calling.txt   # Log chu trình 4 giai đoạn Demo 03 mặc định
+│   ├── 03_show_messages.txt      # Chi tiết message sequence Demo 03
+│   ├── 03_simulate_bad_call.txt  # Thử nghiệm đường từ chối allowlist Demo 03
 │   └── pytest.txt                 # Biên bản 19/19 test cases pass 100%
-├── screenshots/                   # Ảnh chụp màn hình bằng chứng chạy thật (S01 - S07)
+├── screenshots/                   # Bộ ảnh chụp màn hình bằng chứng chạy thật (S01 - S11)
+├── plan/                          # Kế hoạch thực thi và tiêu chuẩn nghiệm thu
 └── report/                        # Mã nguồn và template sinh báo cáo nộp bài PDF
     ├── build_report.py            # Script tự động trích xuất output thành PDF
+    ├── make_zip.py                # Script đóng gói mã nguồn sạch nộp bài
+    ├── report_lint.py             # Script kiểm tra chất lượng báo cáo tự động
+    ├── generate_run_meta.py       # Script trích xuất metadata runtime
     └── report_template.html       # Template HTML thiết kế chuẩn in ấn Unicode
 ```
 
@@ -61,7 +75,7 @@ BTVN02/
 
 ## 3. Cài đặt & Chuẩn bị môi trường
 
-Yêu cầu hệ thống: **Python ≥ 3.10** (đã kiểm thử tương thích hoàn hảo trên Windows với Python 3.14).
+Yêu cầu hệ thống: **Python ≥ 3.10** (đã kiểm thử trên Windows 11 với Python 3.14.3).
 
 ### Bước 1: Khởi tạo Virtual Environment
 
@@ -85,14 +99,14 @@ Sao chép `.env.example` thành `.env` tại thư mục `draft/d02-3/scripts/`:
 cp draft/d02-3/scripts/.env.example draft/d02-3/scripts/.env
 ```
 
-Mở file `.env` và điền cấu hình của bạn:
+Mở file `.env` và điền cấu hình:
 ```ini
 OPENAI_API_KEY=AIzaSy...your_real_api_key...
 OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
-OPENAI_MODEL=gemini-1.5-flash
+OPENAI_MODEL=gemini-3.5-flash-lite
 ```
 
->  **Cảnh báo an ninh:** Tuyệt đối không commit hoặc chia sẻ file `.env` chứa API key thật. Hệ thống đã cấu hình `.gitignore` để ngăn chặn rò rỉ.
+> ⚠️ **Cảnh báo an ninh:** Tuyệt đối không commit hoặc chia sẻ file `.env` chứa API key thật. Hệ thống đã cấu hình `.gitignore` để ngăn chặn rò rỉ.
 
 ---
 
@@ -103,53 +117,51 @@ Di chuyển vào thư mục scripts trước khi thực thi:
 cd draft/d02-3/scripts
 ```
 
-### Demo 00 — Minimal Prose Triage (R1, R2)
-Gửi issue tới LLM và nhận câu trả lời văn bản tự do:
-```bash
-python 00_minimal_triage.py
-```
-Hoặc chỉ định nội dung issue tùy chọn:
-```bash
-python 00_minimal_triage.py --issue "API giỏ hàng trả mã lỗi 504 Gateway Timeout lúc 10:00."
-```
+### Chạy toàn bộ tự động bằng một lệnh:
+* **Trên Windows:**
+  ```powershell
+  .\run_all.ps1
+  # hoặc: powershell -ExecutionPolicy Bypass -File .\run_all.ps1
+  ```
+* **Trên Linux / macOS:**
+  ```bash
+  chmod +x run_all.sh
+  ./run_all.sh
+  ```
 
-### Demo 01 — Đo lường Token EN vs VI (Offline, Tiktoken)
-Chạy phân tích token trên 6 cặp ngữ liệu kỹ thuật mà không cần mạng:
-```bash
-python 01_measure_tokens.py
-```
-Kết quả đo lường và tỉ lệ phân mảnh được in ra màn hình và tự động lưu vào `outputs/01_tokens.csv`.
+### Chạy từng demo đơn lẻ:
 
-### Demo 02 — Structured Output & Application Validation (R3, R4)
-So sánh giữa tạo JSON bằng prompt tự do và JSON ràng buộc có thẩm định ngữ nghĩa phía application:
-```bash
-python 02_structured_output.py --runs 3
-```
-Thử nghiệm khả năng chống prompt injection phá vỡ cấu trúc:
-```bash
-python 02_structured_output.py --adversarial
-```
+* **Demo 00 — Minimal Prose Triage (R1, R2):**
+  ```bash
+  python 00_minimal_triage.py --issue "API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15."
+  ```
 
-### Demo 03 — Function Calling & 4-Stage Trace (R5, R6)
-Chạy chu trình Agentic vòng lặp công cụ với 4 giai đoạn tường minh:
-```bash
-python 03_function_calling.py
-```
-Xem chi tiết chuỗi messages trao đổi giữa các bên:
-```bash
-python 03_function_calling.py --show-messages
-```
-Thử nghiệm cơ chế phòng thủ khi model đề xuất component trái phép:
-```bash
-python 03_function_calling.py --simulate-bad-call billing
-```
+* **Demo 01 — Đo lường Token EN vs VI (Offline, Tiktoken):**
+  ```bash
+  python 01_measure_tokens.py
+  ```
 
-### Demo 04 — Streamlit Web UI
-Khởi chạy giao diện trực quan cho người dùng:
-```bash
-streamlit run 04_streamlit_triage.py --server.headless true
-```
-Truy cập trình duyệt theo địa chỉ: `http://localhost:8501`.
+* **Demo 02 — Structured Output & Application Validation (R3, R4):**
+  ```bash
+  python 02_structured_output.py --runs 10
+  # Thử nghiệm phòng thủ prompt injection:
+  python 02_structured_output.py --adversarial
+  ```
+
+* **Demo 03 — Function Calling & 4-Stage Trace (R5, R6):**
+  ```bash
+  python 03_function_calling.py
+  # Xem chi tiết chuỗi messages:
+  python 03_function_calling.py --show-messages
+  # Kiểm thử đường từ chối allowlist của application:
+  python 03_function_calling.py --simulate-bad-call billing
+  ```
+
+* **Demo 04 — Streamlit Web UI:**
+  ```bash
+  streamlit run 04_streamlit_triage.py --server.headless true
+  ```
+  Truy cập trình duyệt theo địa chỉ: `http://localhost:8501`.
 
 ---
 
@@ -170,9 +182,8 @@ Toàn bộ **19/19 test cases** bao phủ:
 ## 6. Xử lý sự cố thường gặp (Troubleshooting)
 
 1. **Lỗi `400 INVALID_ARGUMENT: Please pass a valid API key`**:
-   - Nguyên nhân: API key trong `.env` không hợp lệ (ví dụ: dùng nhầm tên project client thay vì API key tạo từ Google AI Studio).
    - Khắc phục: Truy cập [Google AI Studio](https://aistudio.google.com/apikey) để tạo khóa mới bắt đầu bằng `AIzaSy...`.
-2. **Lỗi `Port 8501 is already in use` khi chạy Streamlit**:
-   - Khắc phục: Chỉ định port khác bằng cờ `--server.port 8502`.
+2. **Lỗi `429 RESOURCE_EXHAUSTED`**:
+   - Do chạm rate limit free tier của model. Hãy đổi sang `OPENAI_MODEL=gemini-3.5-flash-lite` hoặc chờ hết chu kỳ giới hạn. Hệ thống đã tích hợp `call_with_retry` tự động backoff khi gặp 429/503.
 3. **Lỗi font tiếng Việt khi chạy trên console Windows**:
-   - Hệ thống đã tự động cấu hình `sys.stdout.reconfigure(encoding="utf-8")`. Nếu chạy PowerShell thủ công, có thể thiết lập `$OutputEncoding = [Console]::OutputEncoding = [Text.Encoding]::UTF8`.
+   - Hệ thống đã tự động cấu hình `sys.stdout.reconfigure(encoding="utf-8")`.
