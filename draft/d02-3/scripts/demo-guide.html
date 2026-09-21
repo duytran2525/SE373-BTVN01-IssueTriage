@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Hướng dẫn chạy tuần tự các demo Issue Triage của Buổi 02.">
+  <title>Issue Triage — Demo Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #fbf4e7;
+      --paper: #fffdf8;
+      --latte: #f0e0c4;
+      --caramel: #d79a54;
+      --espresso: #2d1b14;
+      --coffee: #553525;
+      --muted: #735e51;
+      --line: #dcc6aa;
+      --accent: #8a3f26;
+      --accent-hover: #6f2f1d;
+      --success: #2d6a4f;
+      --code: #2a1a16;
+      --focus: #1d6f9f;
+      --shadow: 0 16px 40px rgba(75, 43, 26, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--espresso);
+      font-family: "Noto Sans", Arial, sans-serif;
+      font-size: 18px;
+      line-height: 1.65;
+    }
+    a { color: var(--accent); font-weight: 700; }
+    a:hover { color: var(--accent-hover); }
+    a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    .skip-link {
+      position: fixed;
+      top: .7rem;
+      left: .7rem;
+      z-index: 10;
+      transform: translateY(-160%);
+      padding: .65rem 1rem;
+      color: white;
+      background: var(--espresso);
+      border-radius: .4rem;
+    }
+    .skip-link:focus { transform: translateY(0); }
+    .hero {
+      padding: 4.5rem 1.5rem 3rem;
+      color: #fffaf0;
+      background: radial-gradient(circle at 80% 15%, #9e5c35 0, transparent 30%), linear-gradient(135deg, #2b1913 0%, #553525 100%);
+    }
+    .hero-inner, main, footer { max-width: 1120px; margin: 0 auto; }
+    .eyebrow {
+      margin: 0 0 .75rem;
+      color: var(--coffee);
+      font-family: "JetBrains Mono", monospace;
+      font-size: .85rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .hero .eyebrow { color: #f6cf96; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { max-width: 820px; margin: 0; font-size: clamp(2.4rem, 7vw, 4.8rem); letter-spacing: -.045em; }
+    h2 { margin: 0 0 1rem; font-size: clamp(1.65rem, 4vw, 2.35rem); letter-spacing: -.025em; }
+    h3 { margin: 0; font-size: 1.3rem; }
+    .lead { max-width: 770px; margin: 1.25rem 0 0; color: #f8e9d2; font-size: 1.22rem; }
+    .tag-row { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.75rem; }
+    .tag { padding: .3rem .7rem; border: 1px solid rgba(255,255,255,.28); border-radius: 999px; font-size: .9rem; }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      overflow-x: auto;
+      background: rgba(255,253,248,.96);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+    }
+    nav ul { display: flex; gap: .3rem; max-width: 1120px; margin: 0 auto; padding: .65rem 1.5rem; list-style: none; }
+    nav a { display: block; padding: .45rem .7rem; color: var(--coffee); text-decoration: none; white-space: nowrap; }
+    nav a:hover { color: var(--accent); background: var(--latte); border-radius: .4rem; }
+    main { padding: 3.2rem 1.5rem 5rem; }
+    section { scroll-margin-top: 5rem; margin-top: 4.5rem; }
+    .intro-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 1.2rem; }
+    .intro-grid + .note { margin-top: 1.4rem; }
+    .card, .note, details {
+      padding: 1.35rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: .85rem;
+      box-shadow: var(--shadow);
+    }
+    .note { border-left: 6px solid var(--caramel); box-shadow: none; }
+    .note strong { color: var(--coffee); }
+    .steps { display: grid; gap: 1rem; counter-reset: demo; }
+    .demo {
+      position: relative;
+      padding: 1.5rem 1.5rem 1.5rem 6.25rem;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      counter-increment: demo;
+    }
+    .demo::before {
+      position: absolute;
+      top: 1.35rem;
+      left: 1.35rem;
+      display: grid;
+      width: 3.5rem;
+      height: 3.5rem;
+      place-items: center;
+      color: #fffaf0;
+      background: var(--accent);
+      border-radius: 50%;
+      content: counter(demo, decimal-leading-zero);
+      font-family: "JetBrains Mono", monospace;
+      font-weight: 600;
+    }
+    .demo p { margin: .55rem 0 1rem; color: var(--muted); }
+    .label {
+      display: inline-block;
+      margin-bottom: .55rem;
+      color: var(--success);
+      font-family: "JetBrains Mono", monospace;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    pre {
+      overflow-x: auto;
+      margin: 1rem 0 0;
+      padding: 1.05rem 1.2rem;
+      color: #fff4df;
+      background: var(--code);
+      border: 1px solid #4b3027;
+      border-radius: .65rem;
+      font-family: "JetBrains Mono", "Noto Sans", monospace;
+      font-size: .88rem;
+      line-height: 1.65;
+      tab-size: 2;
+    }
+    code { font-family: "JetBrains Mono", "Noto Sans", monospace; font-size: .9em; }
+    :not(pre) > code { padding: .1rem .3rem; color: var(--coffee); background: var(--latte); border-radius: .25rem; }
+    .checklist { padding-left: 1.2rem; }
+    .checklist li { margin: .55rem 0; }
+    .checklist li::marker { color: var(--success); }
+    details { margin-top: 1rem; box-shadow: none; }
+    summary { cursor: pointer; color: var(--coffee); font-weight: 700; }
+    .warning { border-left-color: var(--accent); }
+    footer { padding: 2rem 1.5rem 4rem; color: var(--muted); font-size: .95rem; }
+    @media (max-width: 700px) {
+      body { font-size: 17px; }
+      .hero { padding-top: 3.25rem; }
+      .intro-grid { grid-template-columns: 1fr; }
+      .demo { padding: 5.65rem 1.2rem 1.2rem; }
+      .demo::before { top: 1.1rem; left: 1.2rem; }
+      main { padding-inline: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#huong-dan">Bỏ qua điều hướng</a>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Buổi 02 · Issue Triage</p>
+      <h1>Hướng dẫn chạy demo Issue Triage</h1>
+      <p class="lead">Chạy lần lượt Demo 00–04: LLM call, token, structured output, function calling và UI Streamlit.</p>
+      <div class="tag-row">
+        <span class="tag">Python</span>
+        <span class="tag">OpenAI-compatible API</span>
+        <span class="tag">Streamlit</span>
+        <span class="tag">Tiếng Việt</span>
+      </div>
+    </div>
+  </header>
+
+  <nav aria-label="Điều hướng hướng dẫn">
+    <ul>
+      <li><a href="#chuan-bi">Chuẩn bị</a></li>
+      <li><a href="#demo">Demo 00–04</a></li>
+      <li><a href="#streamlit">Mở qua LAN</a></li>
+      <li><a href="#su-co">Xử lý sự cố</a></li>
+    </ul>
+  </nav>
+
+  <main id="huong-dan">
+    <section id="chuan-bi">
+      <p class="eyebrow">Một lần trước khi demo</p>
+      <h2>Chuẩn bị môi trường và cấu hình</h2>
+      <div class="intro-grid">
+        <article class="card">
+          <h3>1. Tạo virtual environment</h3>
+          <pre><code>cd draft/d02-3/scripts
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt</code></pre>
+        </article>
+        <article class="card">
+          <h3>2. Tạo file cấu hình</h3>
+          <pre><code>cp .env.example .env</code></pre>
+          <p>Mở <code>.env</code> và điền API key, base URL và model ID của provider đang dùng.</p>
+        </article>
+      </div>
+      <div class="note" role="note">
+        <strong>Không hardcode key.</strong> Các demo đọc <code>.env</code> ở thư mục <code>scripts</code> hoặc ở repository root. <code>OPENAI_BASE_URL</code> và <code>OPENAI_MODEL</code> là bắt buộc.
+      </div>
+      <pre><code>OPENAI_API_KEY=your_key
+OPENAI_BASE_URL=https://your-openai-compatible-provider/v1
+OPENAI_MODEL=provider-prefix/model-id</code></pre>
+    </section>
+
+    <section id="demo">
+      <p class="eyebrow">Chạy lần lượt</p>
+      <h2>Năm demo Issue Triage</h2>
+      <div class="steps">
+        <article class="demo">
+          <span class="label">Demo 00 · prose output</span>
+          <h3>LLM call tối thiểu</h3>
+          <p>Gửi một issue đến model và in câu trả lời tự do. Đây là kiểm tra đầu tiên cho endpoint, key và model đang cấu hình.</p>
+          <pre><code>./00_minimal_triage.py</code></pre>
+          <p>Có thể thay input:</p>
+          <pre><code>./00_minimal_triage.py \
+  --issue "API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15."</code></pre>
+        </article>
+
+        <article class="demo">
+          <span class="label">Demo 01 · offline</span>
+          <h3>Đo token tiếng Anh và tiếng Việt</h3>
+          <p>Demo này chỉ dùng <code>tiktoken</code>, không gọi API. So sánh số token của cùng một nội dung theo hai tokenizer.</p>
+          <pre><code>./01_measure_tokens.py</code></pre>
+        </article>
+
+        <article class="demo">
+          <span class="label">Demo 02 · structured output</span>
+          <h3>So sánh JSON bằng prompt với JSON theo schema</h3>
+          <p>Script in hai kết quả: prompt-only có thể sai shape; structured output được parse thành <code>IssueTriage</code> đã validation.</p>
+          <pre><code>./02_structured_output.py</code></pre>
+        </article>
+
+        <article class="demo">
+          <span class="label">Demo 03 · function calling</span>
+          <h3>Model đề xuất, application thực thi</h3>
+          <p>Model gọi <code>get_component_owner</code>. Application chỉ chấp nhận component <code>payment</code>, <code>identity</code> hoặc <code>search</code>, rồi gửi tool result trở lại model.</p>
+          <pre><code>./03_function_calling.py</code></pre>
+          <p>Trace đúng có ba phần: tool call, application execution và tool result.</p>
+        </article>
+
+        <article class="demo" id="streamlit">
+          <span class="label">Demo 04 · Streamlit UI</span>
+          <h3>Chạy giao diện Issue Triage</h3>
+          <p>Mở form, nhập issue, bấm <strong>Phân loại issue</strong>. UI hiển thị tool trace trước final response.</p>
+          <pre><code>streamlit run 04_streamlit_triage.py \
+  --server.headless true</code></pre>
+          <p>Terminal sẽ in Local URL. Giữ terminal này mở trong lúc dùng UI; <kbd>Ctrl</kbd> + <kbd>C</kbd> sẽ dừng server.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="lan">
+      <p class="eyebrow">Tuỳ chọn</p>
+      <h2>Mở Demo 04 cho thiết bị trong LAN</h2>
+      <div class="note warning" role="note">
+        <strong>Chỉ dùng trong mạng tin cậy.</strong> API key không được gửi về browser, nhưng bất kỳ người nào mở URL này đều có thể khiến server gọi model bằng API key của bạn.
+      </div>
+      <pre><code>streamlit run 04_streamlit_triage.py \
+  --server.address 0.0.0.0 \
+  --server.port 8501 \
+  --server.headless true</code></pre>
+      <p>Dùng <strong>Network URL</strong> Streamlit in ra, ví dụ <code>http://192.168.1.88:8501</code>. Nếu thiết bị khác không vào được, kiểm tra firewall macOS cho TCP port <code>8501</code>.</p>
+    </section>
+
+    <section id="su-co">
+      <p class="eyebrow">Troubleshooting</p>
+      <h2>Lỗi thường gặp</h2>
+      <details>
+        <summary>Streamlit hỏi Email hoặc không chạy nền</summary>
+        <p>Thêm <code>--server.headless true</code> vào lệnh. Lần chạy đầu Streamlit có thể hỏi email; bỏ trống và nhấn Enter, hoặc dùng headless để bỏ qua prompt.</p>
+      </details>
+      <details>
+        <summary><code>Port 8501 is not available</code></summary>
+        <p>Một Streamlit khác đang giữ port. Dừng terminal Streamlit cũ bằng <kbd>Ctrl</kbd> + <kbd>C</kbd>, hoặc đổi sang port khác:</p>
+        <pre><code>streamlit run 04_streamlit_triage.py --server.port 8502 --server.headless true</code></pre>
+      </details>
+      <details>
+        <summary><code>No active credentials for provider</code> hoặc <code>model_not_found</code></summary>
+        <p><code>OPENAI_MODEL</code> không tồn tại hoặc không có quyền trên gateway. Kiểm tra model list của provider rồi đặt model ID đầy đủ, ví dụ có provider prefix như <code>gh/gpt-4.1</code>.</p>
+      </details>
+      <details>
+        <summary>Demo 03 không gọi được tool</summary>
+        <p>Provider/model phải hỗ trợ OpenAI-compatible tool/function calling. Demo yêu cầu tool call và giới hạn component hợp lệ bằng JSON Schema enum.</p>
+      </details>
+    </section>
+
+    <section aria-labelledby="check-title">
+      <p class="eyebrow">Trước giờ học</p>
+      <h2 id="check-title">Checklist nhanh</h2>
+      <ul class="checklist">
+        <li><code>.env</code> có key, base URL và model ID đúng.</li>
+        <li>Demo 00 trả prose output.</li>
+        <li>Demo 02 trả object <code>IssueTriage</code> có schema hợp lệ.</li>
+        <li>Demo 03 cho trace <code>tool_call → tool_result → final response</code>.</li>
+        <li>Demo 04 mở được UI và hiển thị component cùng team phụ trách.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    Issue Triage · Buổi 02 · Tài liệu chạy demo cục bộ.
+  </footer>
+</body>
+</html>

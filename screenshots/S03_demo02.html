@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body {
+    margin: 0;
+    padding: 30px;
+    background: #0f172a;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .window {
+    width: 1340px;
+    background: #181825;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    border: 1px solid #313244;
+    overflow: hidden;
+  }
+  .titlebar {
+    background: #11111b;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #313244;
+  }
+  .buttons {
+    display: flex;
+    gap: 8px;
+  }
+  .btn {
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+  }
+  .btn-red { background: #f38ba8; }
+  .btn-yellow { background: #f9e2af; }
+  .btn-green { background: #a6e3a1; }
+  .title {
+    flex: 1;
+    text-align: center;
+    color: #a6adc8;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .terminal-body {
+    padding: 22px 26px;
+    color: #cdd6f4;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .prompt-line {
+    color: #89b4fa;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .prompt-symbol {
+    color: #a6e3a1;
+  }
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="titlebar">
+    <div class="buttons">
+      <div class="btn btn-red"></div>
+      <div class="btn btn-yellow"></div>
+      <div class="btn btn-green"></div>
+    </div>
+    <div class="title">Demo 02: Structured Output &amp; Invariant Validation</div>
+  </div>
+  <div class="terminal-body">
+    <div class="prompt-line"><span class="prompt-symbol">duy@uit-agentic:~/BTVN02/draft/d02-3/scripts$</span> python 02_structured_output.py --runs 3</div>
+=== DEMO 02: SO SÁNH PROMPT-ONLY JSON VÀ STRUCTURED OUTPUT CÓ APPLICATION VALIDATION ===
+Issue: &#x27;Nút thanh toán trả HTTP 500 với mọi thẻ Visa từ 14:30.&#x27;
+========================================================================================
+
+[PHẦN C - OFFLINE] KIỂM CHỨNG TỰ ĐỘNG CỦA APPLICATION (NEGATIVE CONTROLS)
+Mục đích: Chứng minh application độc lập bảo vệ hệ thống trước payload sai ngữ nghĩa.
+----------------------------------------------------------------------------------------
+• Thử nghiệm: Fixture 1 - Enum không hợp lệ (severity=&#x27;Critical&#x27; thay vì P0..P3)
+  =&gt; [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+• Thử nghiệm: Fixture 2 - Thiếu trường bắt buộc (&#x27;reason&#x27; bị thiếu)
+  =&gt; [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+• Thử nghiệm: Fixture 3 - Vi phạm bất biến liên trường (P0 nhưng needs_urgent_response=False)
+  =&gt; [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+----------------------------------------------------------------------------------------
+
+[PHẦN A] PROMPT-ONLY JSON (Thử nghiệm 3 lần - Nhiệt độ T=0.7)
+Mô tả: Chỉ yêu cầu model trả JSON bằng prompt, không dùng constrained decoding.
+----------------------------------------------------------------------------------------
+Lần 01: Kết quả=VALID_PYDANTIC            Đoạn trích: {&quot;status&quot;: &quot;classified&quot;, &quot;severity&quot;: &quot;P0&quot;, &quot;component&quot;: &quot;pay...
+Lần 02: LỖI GỌI API: Error code: 503 - [{&#x27;error&#x27;: {&#x27;code&#x27;: 503, &#x27;message&#x27;: &#x27;This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.&#x27;, &#x27;status&#x27;: &#x27;UNAVAILABLE&#x27;}}]
+Lần 03: Kết quả=VALID_PYDANTIC            Đoạn trích: {&quot;status&quot;:&quot;classified&quot;,&quot;severity&quot;:&quot;P0&quot;,&quot;component&quot;:&quot;payment&quot;...
+
+=&gt; Tỉ lệ hợp lệ schema Pydantic: 2/3 (66.7%)
+
+[PHẦN B] STRUCTURED OUTPUT KÈM APPLICATION VALIDATION (R3, R4)
+Mô tả: Sử dụng response_format kèm model_validate_json ở phía application.
+----------------------------------------------------------------------------------------
+ĐÃ PARSE VÀ VALIDATE THÀNH CÔNG VỀ PYDANTIC MODEL (isinstance = True):
+{
+  &quot;status&quot;: &quot;classified&quot;,
+  &quot;severity&quot;: &quot;P0&quot;,
+  &quot;component&quot;: &quot;payment&quot;,
+  &quot;needs_urgent_response&quot;: true,
+  &quot;reason&quot;: &quot;Lỗi HTTP 500 xuất hiện trên toàn bộ thẻ Visa từ 14:30 làm gián đoạn dịch vụ thanh toán.&quot;
+}
+
+Trạng thái (status)             : classified
+Mức độ nghiêm trọng (severity)  : P0
+Phân hệ phụ trách (component)   : payment
+Cần ứng cứu gấp (needs_urgent) : True
+Lý do căn cứ (reason)           : Lỗi HTTP 500 xuất hiện trên toàn bộ thẻ Visa từ 14:30 làm gián đoạn dịch vụ thanh toán.
+
+========================================================================================
+
+  </div>
+</div>
+</body>
+</html>

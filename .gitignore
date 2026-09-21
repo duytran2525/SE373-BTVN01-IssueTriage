@@ -1,0 +1,29 @@
+# Environment and credentials
+.env
+.env.local
+*.key
+secrets.toml
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Streamlit temporary files
+.streamlit/secrets.toml
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Temporary artifacts
+*.tmp
+outputs/*.tmp
+.playwright-mcp/

@@ -1,0 +1,28 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\Duy\AppData\Local\Programs\Python\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\Duy\SE373\BTVN02
+plugins: anyio-4.15.1
+collecting ... collected 19 items
+
+tests/test_prompts.py::test_issue_inside_delimiters PASSED               [  5%]
+tests/test_prompts.py::test_system_message_isolation PASSED              [ 10%]
+tests/test_prompts.py::test_delimiter_breakout_sanitization PASSED       [ 15%]
+tests/test_prompts.py::test_empty_input_rejected PASSED                  [ 21%]
+tests/test_prompts.py::test_excessive_length_rejected PASSED             [ 26%]
+tests/test_schema.py::test_valid_classified_payload PASSED               [ 31%]
+tests/test_schema.py::test_valid_out_of_scope_payload PASSED             [ 36%]
+tests/test_schema.py::test_invalid_severity_enum PASSED                  [ 42%]
+tests/test_schema.py::test_invalid_component_enum PASSED                 [ 47%]
+tests/test_schema.py::test_extra_fields_forbidden PASSED                 [ 52%]
+tests/test_schema.py::test_missing_required_field PASSED                 [ 57%]
+tests/test_schema.py::test_cross_field_invariant_p0_requires_urgent PASSED [ 63%]
+tests/test_schema.py::test_classified_requires_severity_and_component PASSED [ 68%]
+tests/test_tool_loop.py::test_4_stage_agent_tool_loop PASSED             [ 73%]
+tests/test_tools.py::test_valid_components PASSED                        [ 78%]
+tests/test_tools.py::test_invalid_component_handled_gracefully PASSED    [ 84%]
+tests/test_tools.py::test_unknown_tool_rejected PASSED                   [ 89%]
+tests/test_tools.py::test_malformed_json_arguments PASSED                [ 94%]
+tests/test_tools.py::test_tool_spec_synced_with_owners PASSED            [100%]
+
+============================= 19 passed in 0.89s ==============================

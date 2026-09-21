@@ -1,0 +1,49 @@
+=== DEMO 03: FUNCTION CALLING & 4-STAGE TRACE (R5, R6) ===
+Mô hình: Model đề xuất (propose) -> Application kiểm soát và thực thi (execute)
+---------------------------------------------------------------------------
+Issue: Nút thanh toán trả HTTP 500 với mọi thẻ Visa từ 14:30. Hãy triage issue và cho biết team nào cần xử lý.
+===========================================================================
+
+=== 1. Model đề xuất tool call (Stage 1: tool_call #1) ===
+{
+  "call_id": "call_2941002",
+  "tool_name": "get_component_owner",
+  "arguments": {
+    "component": "payment"
+  }
+}
+
+=== 2. Application thực thi (Stage 2: application executes) ===
+   [Thẩm định allowlist: 'payment' in ['payment', 'identity', 'search']] -> Hợp lệ ✔
+   get_component_owner('payment') -> 'checkout-platform'
+
+=== 3. Tool result quay lại model (Stage 3: tool_result) ===
+{
+  "component": "payment",
+  "owner": "checkout-platform",
+  "status": "success"
+}
+
+=== 4. Final response từ model (Stage 4: final response) ===
+Dưới đây là kết quả phân loại sự cố (Issue Triage) cho issue trên:
+
+---
+
+### **KẾT QUẢ PHÂN LOẠI SỰ CỐ**
+
+* **Phân hệ liên quan (Component):** `payment` (Thanh toán)
+* **Mức độ nghiêm trọng (Severity):** `P0` (Sự cố khẩn cấp – Lỗi HTTP 500 toàn bộ giao dịch thẻ Visa ảnh hưởng trực tiếp đến doanh thu và luồng thanh toán cốt lõi)
+* **Yêu cầu phản ứng khẩn cấp (`needs_urgent_response`):** `true`
+* **Team kỹ thuật phụ trách (Component Owner):** `checkout-platform`
+
+---
+
+### **HƯỚNG XỬ LÝ TIẾP THEO (RECOMMENDED ACTIONS)**
+
+1. **Chuyển giao sự cố ngay lập tức:** Báo động (Page/Escalate) cho team **`checkout-platform`** và Trực ca kỹ thuật (On-call Engineer).
+2. **Kiểm tra Logs & Metrics:**
+   - Đội ngũ `checkout-platform` kiểm tra log hệ thống backend/gateway thanh toán từ mốc thời gian **14:30** để xác định nguyên nhân lỗi HTTP 500.
+   - Kiểm tra phản hồi (response/error code) từ phía Cổng thanh toán đối tác (Payment Gateway/Acquirer) xử lý thẻ Visa.
+3. **Rà soát thay đổi (Deploy/Config):** Kiểm tra xem có phiên bản deployment hoặc thay đổi cấu hình (Feature flag, API key, Certificate expiry) nào diễn ra quanh thời điểm 14:30 hay không. Thực hiện Rollback nếu sự cố phát sinh do bản release mới.
+4. **Truyền thông sự cố:** Cập nhật trang trạng thái dịch vụ (Status Page) và thông báo cho bộ phận CSKH để hỗ trợ người dùng chuyển sang các phương thức thanh toán khác (Mastercard, Chuyển khoản, Ví điện tử...) trong thời gian xử lý.
+===========================================================================

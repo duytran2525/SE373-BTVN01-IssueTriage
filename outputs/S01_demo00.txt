@@ -1,0 +1,24 @@
+=== DEMO 00: LLM TRIAGE TỐI THIỂU (PROSE OUTPUT) ===
+Model ID : gemini-3.6-flash
+Issue    : API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15.
+------------------------------------------------------------
+Độ trễ phản hồi : 33.70 giây
+Token Usage     : prompt=313, completion=198, total=1158
+------------------------------------------------------------
+KẾT QUẢ TRIAGE (VĂN BẢN TỰ DO):
+Dưới đây là kết quả phân loại sự cố:
+
+```json
+{
+  "component": "identity",
+  "severity": "P0",
+  "needs_urgent_response": true,
+  "summary": "API đăng nhập bị lỗi HTTP 503 trên diện rộng, ảnh hưởng toàn bộ người dùng không thể truy cập hệ thống.",
+  "next_steps": [
+    "Kích hoạt quy trình ứng phó sự cố khẩn cấp (Incident Response Procedure).",
+    "Thông báo cho đội trực On-call / SRE và nhóm phụ trách dịch vụ Identity.",
+    "Kiểm tra log của API Gateway, Identity Service và hạ tầng liên quan để xác định nguyên nhân (quá tải, nghẽn kết nối DB, hoặc lỗi triển khai).",
+    "Cân nhắc rollback phiên bản cập nhật gần nhất nếu sự cố xảy ra sau khi deploy."
+  ]
+}
+```

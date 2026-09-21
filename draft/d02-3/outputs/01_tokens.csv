@@ -1,0 +1,13 @@
+id,category,lang,chars,bytes,tokens_cl100k,tokens_o200k,vi_en_ratio_cl100k,vi_en_ratio_o200k
+C01,Câu ngắn / Short Alert,EN,47,47,10,10,1.0,1.0
+C01,Câu ngắn / Short Alert,VI,57,69,28,18,2.8,1.8
+C02,Mô tả issue / Issue Description,EN,122,122,29,29,1.0,1.0
+C02,Mô tả issue / Issue Description,VI,137,171,58,40,2.0,1.38
+C03,Log & Stack Trace / Technical Log,EN,139,139,41,41,1.0,1.0
+C03,Log & Stack Trace / Technical Log,VI,132,164,68,59,1.66,1.44
+C04,Đoạn kỹ thuật dài / Incident Analysis,EN,231,231,38,37,1.0,1.0
+C04,Đoạn kỹ thuật dài / Incident Analysis,VI,261,357,130,79,3.42,2.14
+C05,Dày dấu thanh / Heavy Diacritics,EN,110,110,14,14,1.0,1.0
+C05,Dày dấu thanh / Heavy Diacritics,VI,134,175,64,35,4.57,2.5
+C06,Định danh & URL / Identifiers & URLs,EN,127,127,37,37,1.0,1.0
+C06,Định danh & URL / Identifiers & URLs,VI,137,153,49,43,1.32,1.16

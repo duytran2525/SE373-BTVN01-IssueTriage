@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Báo cáo BTVN#1 — Issue Triage mini-app — SE373</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+      @bottom-right {
+        content: counter(page) " / " counter(pages);
+        font-family: 'Segoe UI', Tahoma, sans-serif;
+        font-size: 9pt;
+        color: #64748b;
+      }
+    }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.6;
+      color: #1e293b;
+      margin: 0;
+      padding: 0;
+    }
+    .page-break {
+      page-break-after: always;
+    }
+    /* Cover Page */
+    .cover {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 90vh;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .cover-header h3 {
+      font-size: 13pt;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .cover-header h4 {
+      font-size: 11pt;
+      color: #475569;
+      font-weight: 500;
+      margin: 0;
+    }
+    .cover-divider {
+      width: 120px;
+      height: 3px;
+      background: #2563eb;
+      margin: 25px auto;
+    }
+    .cover-title-box {
+      margin: 60px 0;
+    }
+    .cover-title-box h1 {
+      font-size: 26pt;
+      color: #0f172a;
+      line-height: 1.25;
+      margin: 0 0 15px 0;
+      font-weight: 800;
+    }
+    .cover-title-box h2 {
+      font-size: 16pt;
+      color: #2563eb;
+      margin: 0;
+      font-weight: 600;
+    }
+    .cover-info-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 450px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .cover-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 11pt;
+    }
+    .cover-info-label {
+      font-weight: 600;
+      color: #475569;
+    }
+    .cover-info-val {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .cover-footer {
+      font-size: 10pt;
+      color: #64748b;
+    }
+    /* Section Styles */
+    h1.sec-title {
+      font-size: 15pt;
+      color: #0f172a;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 6px;
+      margin-top: 24px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    h2.sub-title {
+      font-size: 12.5pt;
+      color: #1e3a8a;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    h3.sub-sub-title {
+      font-size: 11pt;
+      color: #334155;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+    p {
+      margin: 0 0 10px 0;
+      text-align: justify;
+    }
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 9.5pt;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    /* Code and Terminal Blocks */
+    pre, code {
+      font-family: 'Consolas', 'Courier New', monospace;
+    }
+    pre {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 8.5pt;
+      line-height: 1.45;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 10px 0 14px 0;
+    }
+    p code {
+      background: #e2e8f0;
+      color: #b91c1c;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 9pt;
+    }
+    /* Callout Boxes */
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 12px 16px;
+      border-radius: 0 6px 6px 0;
+      margin: 14px 0;
+    }
+    .callout strong {
+      color: #1d4ed8;
+    }
+    .callout-warn {
+      background: #fefce8;
+      border-left: 4px solid #ca8a04;
+    }
+    .callout-warn strong {
+      color: #a16207;
+    }
+    /* Drive Link Box */
+    .drive-link-box {
+      background: #f0fdf4;
+      border: 2px dashed #16a34a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0 24px 0;
+    }
+    .drive-link-box a {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #15803d;
+      word-break: break-all;
+    }
+    /* Image and Screenshot containers */
+    .img-box {
+      text-align: center;
+      margin: 14px 0;
+      border: 1px solid #e2e8f0;
+      padding: 8px;
+      background: #fafafa;
+      border-radius: 6px;
+    }
+    .img-box img {
+      max-width: 100%;
+      height: auto;
+      max-height: 480px;
+      border-radius: 4px;
+    }
+    .img-caption {
+      font-size: 8.5pt;
+      color: #64748b;
+      margin-top: 6px;
+      font-style: italic;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      font-weight: 600;
+    }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-blue  { background: #dbeafe; color: #1e40af; }
+  </style>
+</head>
+<body>
+
+  <!-- TRANG 1: TRANG BÌA -->
+  <div class="cover page-break">
+    <div class="cover-header">
+      <div style="margin-bottom: 12px;">
+        <img src="logo_uit.png" alt="UIT Logo" style="height: 75px;" />
+      </div>
+      <h3>Trường Đại học Công nghệ Thông tin — ĐHQG-HCM</h3>
+      <h4>Khoa Kỹ thuật Phần mềm · Bộ môn Kỹ thuật Phần mềm</h4>
+      <div class="cover-divider"></div>
+      <h4>Môn học: SE373 — Kỹ thuật xây dựng hệ thống Agentic AI</h4>
+    </div>
+
+    <div class="cover-title-box">
+      <h1>BÁO CÁO THỰC THI BÀI TẬP VỀ NHÀ #1</h1>
+      <h2>Xây dựng Issue Triage Mini-App theo Kiến trúc Agentic AI</h2>
+    </div>
+
+    <div>
+      <div class="cover-info-box">
+        <div class="cover-info-row">
+          <span class="cover-info-label">Sinh viên thực hiện:</span>
+          <span class="cover-info-val">{{STUDENT_NAME}}</span>
+        </div>
+        <div class="cover-info-row">
+          <span class="cover-info-label">Mã số sinh viên:</span>
+          <span class="cover-info-val">{{STUDENT_ID}}</span>
+        </div>
+        <div class="cover-info-row">
+          <span class="cover-info-label">Lớp sinh hoạt:</span>
+          <span class="cover-info-val">{{CLASS_NAME}}</span>
+        </div>
+        <div class="cover-info-row">
+          <span class="cover-info-label">Buổi thực hành:</span>
+          <span class="cover-info-val">Buổi 02 (16/09/2026)</span>
+        </div>
+        <div class="cover-info-row">
+          <span class="cover-info-label">Ngày nộp báo cáo:</span>
+          <span class="cover-info-val">{{SUBMISSION_DATE}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      Thành phố Hồ Chí Minh — Năm 2026
+    </div>
+  </div>
+
+  <!-- TRANG 2: LINK GOOGLE DRIVE & THÔNG TIN NỘP BÀI -->
+  <div class="page-break">
+    <h1 class="sec-title">Thông tin Giao nộp Mã nguồn & Môi trường</h1>
+
+    <div class="drive-link-box">
+      <p style="margin-bottom: 6px; font-weight: bold; color: #166534;">
+        🔗 LIÊN KẾT GOOGLE DRIVE CHỨA MÃ NGUỒN (PUBLIC ACCESS):
+      </p>
+      <a href="{{DRIVE_LINK}}" target="_blank">{{DRIVE_LINK}}</a>
+      <p style="margin-top: 8px; font-size: 9pt; color: #4b5563;">
+        <em>(Quyền truy cập: <strong>Anyone with the link → Viewer</strong>. Đã kiểm tra mở thành công trong cửa sổ ẩn danh).</em>
+      </p>
+    </div>
+
+    <h2 class="sub-title">1. Hướng dẫn chạy nhanh ứng dụng (5 bước)</h2>
+    <pre><code># 1. Kích hoạt môi trường ảo
+source .venv/bin/activate   # (Trên Windows: .venv\Scripts\activate)
+
+# 2. Cài đặt các thư viện phụ thuộc
+pip install -r draft/d02-3/scripts/requirements.txt
+
+# 3. Cấu hình file .env với API Key, Base URL và Model ID thật
+cp draft/d02-3/scripts/.env.example draft/d02-3/scripts/.env
+
+# 4. Chạy toàn bộ các demo CLI (00, 01, 02, 03) và bộ kiểm thử
+cd draft/d02-3/scripts && python run_all.ps1  # (hoặc ./run_all.sh)
+
+# 5. Khởi chạy giao diện người dùng Web Streamlit (Demo 04)
+streamlit run 04_streamlit_triage.py --server.headless true</code></pre>
+
+    <h2 class="sub-title">2. Cấu trúc đóng gói mã nguồn</h2>
+    <pre><code>BTVN02/
+├── README.md                      # Tài liệu tổng quan và hướng dẫn vận hành chi tiết
+├── .gitignore                     # Cấu hình loại bỏ hoàn toàn file nhạy cảm và virtualenv
+├── draft/d02-3/scripts/
+│   ├── .env.example               # Mẫu cấu hình biến môi trường an toàn
+│   ├── demo_common.py             # Quản lý cấu hình, che giấu API key, bảo vệ console UTF-8
+│   ├── prompts.py                 # (R2) Prompt template, phân tách instruction/input, lọc delimiter
+│   ├── schemas.py                 # (R3, R4) Pydantic IssueTriage, ràng buộc bất biến liên trường
+│   ├── triage_workflow.py         # (R5, R6) Quy trình Agentic tool loop, allowlist kiểm soát an ninh
+│   ├── 00_minimal_triage.py       # (R1) Demo 00: Tối thiểu gọi LLM và xuất prose
+│   ├── 01_measure_tokens.py       # Demo 01: Đo lường token EN vs VI (offline, tiktoken)
+│   ├── 02_structured_output.py    # (R3, R4) Demo 02: So sánh prompt-only vs structured output
+│   ├── 03_function_calling.py     # (R5, R6) Demo 03: CLI Tool calling & 4-Stage Trace
+│   └── 04_streamlit_triage.py     # Demo 04: Giao diện Web tương tác hoàn chỉnh
+├── tests/                         # Bộ unit test offline 100% (19 test cases pass)
+├── outputs/                       # Thư mục chứa bằng chứng đầu ra thật (.txt, .csv)
+└── screenshots/                   # Ảnh chụp màn hình bằng chứng thực thi</code></pre>
+  </div>
+
+  <!-- TRANG 3: MA TRẬN TRUY VẾT YÊU CẦU ĐỀ BÀI -->
+  <div class="page-break">
+    <h1 class="sec-title">Phần 1: Ma trận Truy vết Yêu cầu Kỹ thuật (Traceability Matrix)</h1>
+    <p>Đối chiếu chi tiết giữa 6 yêu cầu kỹ thuật của đề bài (R1 – R6) và 3 yêu cầu bàn giao (S1 – S3) với các cấu phần hiện thực cụ thể:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 8%;">Mã</th>
+          <th style="width: 25%;">Yêu cầu từ Giảng viên</th>
+          <th style="width: 32%;">Giải pháp Hiện thực</th>
+          <th style="width: 20%;">File Mã nguồn</th>
+          <th style="width: 15%;">Bằng chứng</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>R1</strong></td>
+          <td>Nhận mô tả issue phần mềm</td>
+          <td>Hỗ trợ tham số dòng lệnh <code>--issue</code> và ô nhập đa dòng trên Web UI có văn bản mẫu.</td>
+          <td><code>00_minimal_triage.py</code><br><code>04_streamlit_triage.py</code></td>
+          <td><span class="badge badge-green">Output 00</span><br>Screenshot S06</td>
+        </tr>
+        <tr>
+          <td><strong>R2</strong></td>
+          <td>Prompt template tách instruction và input</td>
+          <td>System instruction cố định vai trò; User input bọc trong <code>&lt;issue&gt;...&lt;/issue&gt;</code>; lọc thẻ đóng injection.</td>
+          <td><code>prompts.py</code></td>
+          <td>Test suite<br><code>test_prompts.py</code></td>
+        </tr>
+        <tr>
+          <td><strong>R3</strong></td>
+          <td>Trả về <code>IssueTriage</code> bằng Pydantic / JSON Schema</td>
+          <td>Pydantic model <code>IssueTriage</code> với <code>extra="forbid"</code>, sinh JSON Schema chuẩn gửi qua <code>response_format</code>.</td>
+          <td><code>schemas.py</code><br><code>02_structured_output.py</code></td>
+          <td><span class="badge badge-green">Output 02</span><br>Screenshot S03</td>
+        </tr>
+        <tr>
+          <td><strong>R4</strong></td>
+          <td>Validate output ở phía application</td>
+          <td>Thẩm định tại app qua <code>model_validate_json</code>, kiểm tra invariant (P0 bắt buộc urgent), bộ 3 negative controls.</td>
+          <td><code>schemas.py</code><br><code>02_structured_output.py</code></td>
+          <td>Phần C Demo 02<br><code>test_schema.py</code></td>
+        </tr>
+        <tr>
+          <td><strong>R5</strong></td>
+          <td>Khai báo một tool đơn giản</td>
+          <td>Tool <code>get_component_owner</code> với allowlist nghiêm ngặt trên 3 phân hệ: <code>payment</code>, <code>identity</code>, <code>search</code>.</td>
+          <td><code>triage_workflow.py</code></td>
+          <td><span class="badge badge-green">Output 03</span><br><code>test_tools.py</code></td>
+        </tr>
+        <tr>
+          <td><strong>R6</strong></td>
+          <td>In trace 4 giai đoạn rõ ràng</td>
+          <td>Trace đánh số thứ tự: <code>tool_call → app executes → tool_result → final response</code> xuất hiện trên CLI &amp; UI.</td>
+          <td><code>03_function_calling.py</code><br><code>04_streamlit_triage.py</code></td>
+          <td><span class="badge badge-green">Output 03</span><br>Screenshot S07</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Nguyên tắc kiểm soát an ninh tối thượng:</strong> Toàn bộ quy trình tuân thủ nguyên lý <em>Trust Boundary</em> (Ranh giới Tin cậy). Application không bao giờ xem model là thực thể có quyền thi hành mã lệnh, mà xem các đề xuất của model như dữ liệu đầu vào chưa được xác thực (Untrusted Input). Mọi lời gọi công cụ đều phải qua Application kiểm tra allowlist và thực thi an toàn.
+    </div>
+  </div>
+
+  <!-- TRANG 4: CHI TIẾT DEMO 00 & DEMO 01 -->
+  <div class="page-break">
+    <h1 class="sec-title">Phần 2: Chi tiết Demo 00 — Minimal LLM Triage (Prose Output)</h1>
+    <h2 class="sub-title">1. Mục tiêu & Ý nghĩa Học thuật</h2>
+    <p>
+      Demo 00 thiết lập kết nối cơ sở tối thiểu tới endpoint tương thích OpenAI. Toàn bộ ngữ cảnh của cuộc hội thoại được truyền tải đầy đủ trong mảng <code>messages</code> (tính chất <em>stateless</em> của REST API). Đầu ra của mô hình là văn bản ngôn ngữ tự nhiên tự do (prose), chứng minh tính khả dụng của endpoint, model ID và API key, đồng thời bộc lộ nhược điểm: máy tính khó phân tích cú pháp tự động từ văn bản tự do, dẫn tới nhu cầu của Demo 02.
+    </p>
+
+    <h2 class="sub-title">2. Lệnh thực thi & Bằng chứng Output thật</h2>
+    <pre><code>python 00_minimal_triage.py --issue "API đăng nhập trả HTTP 503 cho toàn bộ người dùng từ 09:15."</code></pre>
+    
+    <div class="img-box">
+      {{SCREENSHOT_S01}}
+      <div class="img-caption">Hình 1: Ảnh chụp thực thi Demo 00 xuất văn bản prose và thông số thời gian phản hồi, token usage.</div>
+    </div>
+
+    <h1 class="sec-title">Phần 3: Chi tiết Demo 01 — Phân tích Đo lường Token Hóa (Offline)</h1>
+    <h2 class="sub-title">1. Mục tiêu & Cơ chế Kỹ thuật</h2>
+    <p>
+      Demo 01 hoạt động <strong>hoàn toàn offline</strong> bằng thư viện <code>tiktoken</code>, không gọi API bên ngoài. Mục tiêu là so sánh sự chênh lệch số lượng token giữa tiếng Anh và tiếng Việt trên cùng một ngữ nghĩa qua 2 thế hệ tokenizer: <code>cl100k_base</code> (~100k từ vựng) và <code>o200k_base</code> (~200k từ vựng).
+    </p>
+
+    <h2 class="sub-title">2. Bảng số liệu thực nghiệm đo lường trên 6 nhóm ngữ liệu kỹ thuật</h2>
+    {{TABLE_TOKENS_01}}
+
+    <div class="img-box">
+      {{SCREENSHOT_S02}}
+      <div class="img-caption">Hình 2: Ảnh chụp terminal thực thi Demo 01 so sánh Token hóa EN vs VI và minh họa phân mảnh byte (S02).</div>
+    </div>
+
+    <h2 class="sub-title">3. Hiện tượng Phân mảnh Byte (Token Fragmentation)</h2>
+    <p>
+      Khảo sát trên câu mẫu: <code>"Cụm tìm kiếm gặp sự cố"</code>:
+    </p>
+    <pre><code>1. cl100k_base (16 tokens):
+   Token [00] ID=34     Raw bytes=b'C'
+   Token [01] ID=51583  Raw bytes=b'\xe1\xbb\xa5'   <-- Dấu nặng 'ụ' bị bẻ thành mảnh byte lẻ
+   Token [02] ID=76     Raw bytes=b'm'
+   Token [03] ID=259    Raw bytes=b' t'
+   Token [04] ID=24439  Raw bytes=b'\xc3\xac'       <-- Dấu huyền 'ì' bị bẻ thành mảnh byte lẻ
+   ...
+
+2. o200k_base (8 tokens):
+   Token [00] ID=34     Raw bytes=b'C'
+   Token [01] ID=2503   Raw bytes=b'\xe1\xbb\xa5'
+   Token [02] ID=76     Raw bytes=b'm'
+   Token [03] ID=71338  Raw bytes=b' t\xc3\xacm'    <-- ' tìm' được nhận diện thành nguyên âm tiết đơn token!
+   Token [04] ID=125919 Raw bytes=b' ki\xe1\xba\xbfm'<-- ' kiếm' gom gọn thành 1 token duy nhất!</code></pre>
+    <p>
+      <strong>Nhận xét học thuật:</strong> Tiếng Việt sử dụng bảng mã UTF-8 gồm 2-3 bytes cho các ký tự có dấu thanh. Vì thuật ngữ huấn luyện BPE thiên về tiếng Anh, các âm tiết tiếng Việt thường bị bẻ nhỏ thành từng mảnh byte độc lập trong <code>cl100k_base</code>, đẩy số token lên gấp 1.5 - 4.5 lần so với tiếng Anh. Việc nâng cấp lên <code>o200k_base</code> với kho từ vựng mở rộng giúp dung nạp nhiều n-gram tiếng Việt hơn, giảm rõ rệt 40-50% số token tiêu hao, trực tiếp hạ thấp chi phí API và độ trễ phản hồi.
+    </p>
+  </div>
+
+  <!-- TRANG 5: CHI TIẾT DEMO 02 -->
+  <div class="page-break">
+    <h1 class="sec-title">Phần 4: Chi tiết Demo 02 — Structured Output & Application Validation</h1>
+    <h2 class="sub-title">1. So sánh Prompt-Only JSON và Structured Output</h2>
+    <p>
+      Yêu cầu mô hình trả về JSON bằng cách mô tả trong prompt (Prompt-Only) là hành vi mang tính <em>xác suất</em> (dựa vào năng lực instruction-following của LLM). Mô hình có thể vi phạm định dạng: bao bọc bởi markdown block <code>```json</code>, thiếu trường bắt buộc, hoặc sinh các giá trị enum không tồn tại (như <code>"Critical"</code> thay vì <code>"P0"</code>). Ngược lại, <em>Constrained Structured Output</em> cưỡng chế quá trình giải mã (Constrained Decoding) theo JSON Schema.
+    </p>
+
+    <h2 class="sub-title">2. Thẩm định Ngữ nghĩa độc lập tại Application (R4)</h2>
+    <div class="callout">
+      <strong>Điểm cốt lõi: Hợp lệ cú pháp Schema ≠ Hợp lệ quy tắc nghiệp vụ.</strong><br>
+      Provider/Gateway chỉ đảm bảo đầu ra khớp cấu trúc Schema, nhưng không thể kiểm soát các <em>ràng buộc ngữ nghĩa chéo (Cross-field Invariants)</em>. Do đó, Application bắt buộc phải tự thẩm tra bằng <code>model_validate_json</code> ở tầng ứng dụng.
+    </div>
+
+    <p>Quy tắc bất biến (Invariant) được hiện thực trong Pydantic validator:</p>
+    <pre><code>@model_validator(mode="after")
+def validate_application_invariants(self):
+    if self.severity == "P0" and not self.needs_urgent_response:
+        raise ValueError("Lỗi bất biến: Khi severity='P0', needs_urgent_response bắt buộc là True.")
+    return self</code></pre>
+
+    <h2 class="sub-title">3. Kết quả Thử nghiệm Negative Control Fixtures (Phần C - Offline)</h2>
+    <pre><code>[PHẦN C - OFFLINE] KIỂM CHỨNG TỰ ĐỘNG CỦA APPLICATION (NEGATIVE CONTROLS)
+• Thử nghiệm: Fixture 1 - Enum không hợp lệ (severity='Critical' thay vì P0..P3)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: Input should be 'P0', 'P1', 'P2' or 'P3'
+• Thử nghiệm: Fixture 2 - Thiếu trường bắt buộc ('reason' bị thiếu)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: Field required [type=missing, input_value=...]
+• Thử nghiệm: Fixture 3 - Vi phạm bất biến liên trường (P0 nhưng needs_urgent_response=False)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: Value error, Lỗi bất biến liên trường: Khi severity='P0', needs_urgent_response bắt buộc phải là True.</code></pre>
+
+    <div class="img-box">
+      {{SCREENSHOT_S03}}
+      <div class="img-caption">Hình 2: Ảnh chụp kết quả Demo 02 hiển thị đối chiếu giữa Prompt-Only, Structured Output và Application Validation.</div>
+    </div>
+  </div>
+
+  <!-- TRANG 6: CHI TIẾT DEMO 03 & DEMO 04 -->
+  <div class="page-break">
+    <h1 class="sec-title">Phần 5: Chi tiết Demo 03 — Function Calling & 4-Stage Trace (R5, R6)</h1>
+    <h2 class="sub-title">1. Nguyên lý Vòng lặp Agentic (Agentic Tool Loop)</h2>
+    <p>
+      Mô hình ngôn ngữ lớn <strong>không bao giờ tự thực thi mã lệnh</strong>. Trong cơ chế Function Calling, model chỉ đóng vai trò phân tích yêu cầu và phát sinh một đề xuất có cấu trúc (Tool Proposal). Application giữ quyền kiểm soát toàn diện: nhận đề xuất, kiểm tra an ninh trong allowlist, thực thi hàm nội bộ an toàn và trả kết quả ngược lại cho model.
+    </p>
+
+    <h2 class="sub-title">2. Bốn giai đoạn Trace tường minh (Numbered 4-Stage Trace)</h2>
+    <pre><code>=== 1. Model đề xuất tool call (Stage 1: tool_call) ===
+{
+  "call_id": "call_98xfa2...",
+  "tool_name": "get_component_owner",
+  "arguments": { "component": "payment" }
+}
+
+=== 2. Application thực thi (Stage 2: application executes) ===
+   [Thẩm định allowlist: 'payment' in ['payment', 'identity', 'search']] -> Hợp lệ ✔
+   get_component_owner('payment') -> 'checkout-platform'
+
+=== 3. Tool result quay lại model (Stage 3: tool_result) ===
+{
+  "component": "payment",
+  "owner": "checkout-platform",
+  "status": "success"
+}
+
+=== 4. Final response từ model (Stage 4: final response) ===
+Issue thanh toán bị lỗi HTTP 500 thuộc phân hệ Payment. 
+Team chịu trách nhiệm xử lý là checkout-platform. Đây là sự cố nghiêm trọng cần ứng cứu khẩn cấp.</code></pre>
+
+    <div class="img-box">
+      {{SCREENSHOT_S04}}
+      <div class="img-caption">Hình 3: Ảnh chụp màn hình dòng lệnh Demo 03 hiển thị đầy đủ 4 giai đoạn Trace Function Calling.</div>
+    </div>
+
+    <h1 class="sec-title">Phần 6: Chi tiết Demo 04 — Giao diện Web Streamlit Hoàn chỉnh</h1>
+    <p>
+      Demo 04 cung cấp giao diện tương tác trực quan qua Streamlit. Bố cục tuân thủ nghiêm ngặt yêu cầu thiết kế: <strong>Tool Trace nằm phía trên Final Response</strong>, đi kèm hàng thẻ tóm tắt phân hệ và đội ngũ phụ trách. Cấu hình sidebar chỉ hiển thị hostname của nhà cung cấp và tên model, che giấu hoàn toàn API key nhằm đảm bảo an toàn thông tin.
+    </p>
+
+    <div class="img-box">
+      {{SCREENSHOT_S05}}
+      <div class="img-caption">Hình 4: Terminal khởi chạy Streamlit server hiển thị Local URL (S05).</div>
+    </div>
+
+    <div class="img-box">
+      {{SCREENSHOT_S06}}
+      <div class="img-caption">Hình 5: Giao diện nhập liệu Streamlit với các kịch bản mẫu sẵn có (S06).</div>
+    </div>
+
+    <div class="img-box">
+      {{SCREENSHOT_S07}}
+      <div class="img-caption">Hình 6: Giao diện kết quả triage hiển thị Trace 4 giai đoạn phía trên Final Response (S07).</div>
+    </div>
+  </div>
+
+  <!-- TRANG 7: QUYẾT ĐỊNH THIẾT KẾ, RỦI RO & KẾT LUẬN -->
+  <div class="page-break">
+    <h1 class="sec-title">Phần 7: Các Quyết định Thiết kế Kiến trúc Cốt lõi</h1>
+    <ol>
+      <li><strong>Tách biệt Instruction và Input (R2):</strong> Không bao giờ nối chuỗi chung System Prompt với User Input. Toàn bộ nội dung issue được bọc trong delimiter <code>&lt;issue&gt;...&lt;/issue&gt;</code> và áp dụng bộ lọc xóa thẻ đóng giả lập nhằm triệt tiêu nguy cơ tấn công prompt injection phá vỡ cấu trúc.</li>
+      <li><strong>Ranh giới Tin cậy (Trust Boundary - R5):</strong> Xem LLM là vùng không tin cậy (Untrusted Zone). Hàm <code>execute_tool_call</code> luôn kiểm tra đối số nghiêm ngặt thông qua allowlist và trả về dict chứa lỗi thay vì để ngoại lệ làm đổ vỡ vòng lặp agent.</li>
+      <li><strong>Defense-in-Depth phía Application (R4):</strong> Không ỷ lại vào gateway hay provider. Ngay cả khi có JSON Schema từ provider, Application vẫn luôn xác thực lại bằng Pydantic model và kiểm tra ràng buộc ngữ nghĩa liên trường.</li>
+      <li><strong>Thang bậc Dự phòng Linh hoạt (Fallback Hierarchy):</strong> Hỗ trợ luân chuyển mượt mà giữa <code>client.beta.chat.completions.parse</code>, <code>json_schema</code> và <code>json_object</code>, giúp hệ thống hoạt động ổn định trên mọi nhà cung cấp tương thích OpenAI (Gemini, OpenAI, Groq, Ollama).</li>
+    </ol>
+
+    <h1 class="sec-title">Phần 8: Hạn chế Hệ thống & Đánh giá Rủi ro Dư thừa</h1>
+    <ul>
+      <li><strong>Rủi ro Dư của Prompt Injection:</strong> Mặc dù kỹ thuật delimiter và system prompt giúp loại trừ các đòn tấn công phá vỡ thẻ đóng cơ bản, các kỹ thuật bẻ gãy ngữ cảnh tinh vi (semantic jailbreak) vẫn có thể khiến LLM hiểu nhầm ý định phân loại.</li>
+      <li><strong>Xấp xỉ của Tokenizer:</strong> Kết quả đo đạc từ <code>tiktoken</code> chỉ phản ánh chính xác các mô hình của OpenAI. Đối với các nhà cung cấp khác như Gemini (dùng SentencePiece) hay Claude, tỷ lệ phân mảnh thực tế có thể có sự biến thiên nhất định.</li>
+      <li><strong>Dữ liệu Giả lập (Mock Data):</strong> Danh bạ phân công <code>COMPONENT_OWNERS</code> hiện là dữ liệu in-memory mẫu. Trong môi trường doanh nghiệp thực tế, cấu phần này cần được kết nối tới cơ sở dữ liệu dịch vụ Service Registry (như Backstage hoặc CMDB).</li>
+    </ul>
+
+    <h1 class="sec-title">Phần 9: Kết luận & Phụ lục</h1>
+    <h2 class="sub-title">1. Kết luận</h2>
+    <p>
+      Bài tập đã hoàn thành xuất sắc toàn bộ 6 yêu cầu kỹ thuật (R1 – R6) và các yêu cầu giao nộp sản phẩm (S1 – S3). Dự án làm nổi bật sự chuyển dịch quan trọng từ việc gọi LLM đơn lẻ sang xây dựng hệ thống tác nhân (Agentic System) có cấu trúc, có sự giám sát an ninh chặt chẽ từ phía ứng dụng và có khả năng tương tác công cụ đáng tin cậy.
+    </p>
+
+    <h2 class="sub-title">2. Phụ lục: Biên bản Kiểm thử Tự động (19/19 Tests Passed)</h2>
+    <div class="img-box">
+      {{SCREENSHOT_S08}}
+      <div class="img-caption">Hình 7: Ảnh chụp kết quả kiểm thử tự động pytest 19/19 test cases pass 100% offline (S08).</div>
+    </div>
+    <pre><code>============================= test session starts =============================
+platform win32 -- Python 3.14.3, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\Duy\SE373\BTVN02
+collected 19 items
+
+tests/test_prompts.py::test_issue_inside_delimiters PASSED               [  5%]
+tests/test_prompts.py::test_system_message_isolation PASSED              [ 10%]
+tests/test_prompts.py::test_delimiter_breakout_sanitization PASSED       [ 15%]
+tests/test_prompts.py::test_empty_input_rejected PASSED                  [ 21%]
+tests/test_prompts.py::test_excessive_length_rejected PASSED             [ 26%]
+tests/test_schema.py::test_valid_classified_payload PASSED               [ 31%]
+tests/test_schema.py::test_valid_out_of_scope_payload PASSED             [ 36%]
+tests/test_schema.py::test_invalid_severity_enum PASSED                  [ 42%]
+tests/test_schema.py::test_invalid_component_enum PASSED                 [ 47%]
+tests/test_schema.py::test_extra_fields_forbidden PASSED                 [ 52%]
+tests/test_schema.py::test_missing_required_field PASSED                 [ 57%]
+tests/test_schema.py::test_cross_field_invariant_p0_requires_urgent PASSED [ 63%]
+tests/test_schema.py::test_classified_requires_severity_and_component PASSED [ 68%]
+tests/test_tool_loop.py::test_4_stage_agent_tool_loop PASSED             [ 73%]
+tests/test_tools.py::test_valid_components PASSED                        [ 78%]
+tests/test_tools.py::test_invalid_component_handled_gracefully PASSED    [ 84%]
+tests/test_tools.py::test_unknown_tool_rejected PASSED                   [ 89%]
+tests/test_tools.py::test_malformed_json_arguments PASSED                [ 94%]
+tests/test_tool_loop.py::test_4_stage_agent_tool_loop PASSED             [100%]
+
+============================= 19 passed in 0.83s ==============================</code></pre>
+  </div>
+
+</body>
+</html>

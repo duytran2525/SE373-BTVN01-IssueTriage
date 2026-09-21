@@ -1,0 +1,43 @@
+=== DEMO 02: SO SÁNH PROMPT-ONLY JSON VÀ STRUCTURED OUTPUT CÓ APPLICATION VALIDATION ===
+Issue: 'Nút thanh toán trả HTTP 500 với mọi thẻ Visa từ 14:30.'
+========================================================================================
+
+[PHẦN C - OFFLINE] KIỂM CHỨNG TỰ ĐỘNG CỦA APPLICATION (NEGATIVE CONTROLS)
+Mục đích: Chứng minh application độc lập bảo vệ hệ thống trước payload sai ngữ nghĩa.
+----------------------------------------------------------------------------------------
+• Thử nghiệm: Fixture 1 - Enum không hợp lệ (severity='Critical' thay vì P0..P3)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+• Thử nghiệm: Fixture 2 - Thiếu trường bắt buộc ('reason' bị thiếu)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+• Thử nghiệm: Fixture 3 - Vi phạm bất biến liên trường (P0 nhưng needs_urgent_response=False)
+  => [THÀNH CÔNG BỊ CHẶN] Application phát hiện và từ chối: 1 validation error for IssueTriage
+----------------------------------------------------------------------------------------
+
+[PHẦN A] PROMPT-ONLY JSON (Thử nghiệm 3 lần - Nhiệt độ T=0.7)
+Mô tả: Chỉ yêu cầu model trả JSON bằng prompt, không dùng constrained decoding.
+----------------------------------------------------------------------------------------
+Lần 01: Kết quả=VALID_PYDANTIC            Đoạn trích: {"status": "classified", "severity": "P0", "component": "pay...
+Lần 02: LỖI GỌI API: Error code: 503 - [{'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}]
+Lần 03: Kết quả=VALID_PYDANTIC            Đoạn trích: {"status":"classified","severity":"P0","component":"payment"...
+
+=> Tỉ lệ hợp lệ schema Pydantic: 2/3 (66.7%)
+
+[PHẦN B] STRUCTURED OUTPUT KÈM APPLICATION VALIDATION (R3, R4)
+Mô tả: Sử dụng response_format kèm model_validate_json ở phía application.
+----------------------------------------------------------------------------------------
+ĐÃ PARSE VÀ VALIDATE THÀNH CÔNG VỀ PYDANTIC MODEL (isinstance = True):
+{
+  "status": "classified",
+  "severity": "P0",
+  "component": "payment",
+  "needs_urgent_response": true,
+  "reason": "Lỗi HTTP 500 xuất hiện trên toàn bộ thẻ Visa từ 14:30 làm gián đoạn dịch vụ thanh toán."
+}
+
+Trạng thái (status)             : classified
+Mức độ nghiêm trọng (severity)  : P0
+Phân hệ phụ trách (component)   : payment
+Cần ứng cứu gấp (needs_urgent) : True
+Lý do căn cứ (reason)           : Lỗi HTTP 500 xuất hiện trên toàn bộ thẻ Visa từ 14:30 làm gián đoạn dịch vụ thanh toán.
+
+========================================================================================

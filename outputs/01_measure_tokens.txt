@@ -1,0 +1,61 @@
+﻿=== DEMO 01: SO S├üNH TOKEN H├ôA TIß║╛NG ANH V├Ç TIß║╛NG VIß╗åT ===
+Tokenizer 1: cl100k_base (GPT-4 / GPT-3.5 turbo - ~100k vocab)
+Tokenizer 2: o200k_base  (GPT-4o / GPT-4o-mini - ~200k vocab)
+========================================================================================
+ID   | Thß╗â loß║íi                 | Ng├┤n ngß╗» | K├╜ tß╗▒  | Bytes  | cl100k   | o200k    | Tß╗ë lß╗ç VI/EN (cl)   | Tß╗ë lß╗ç VI/EN (o2)  
+-------------------------------------------------------------------------------------------------------------------
+C01  | C├óu ngß║»n / Short Alert   | EN       | 47     | 47     | 10       | 10       | 1.00               | 1.00              
+     | C├óu ngß║»n / Short Alert   | VI       | 57     | 69     | 28       | 18       | 2.80               | 1.80              
+C02  | M├┤ tß║ú issue / Issue Description | EN       | 122    | 122    | 29       | 29       | 1.00               | 1.00              
+     | M├┤ tß║ú issue / Issue Description | VI       | 137    | 171    | 58       | 40       | 2.00               | 1.38              
+C03  | Log & Stack Trace / Technical Log | EN       | 139    | 139    | 41       | 41       | 1.00               | 1.00              
+     | Log & Stack Trace / Technical Log | VI       | 132    | 164    | 68       | 59       | 1.66               | 1.44              
+C04  | ─Éoß║ín kß╗╣ thuß║¡t d├ái / Incident Analysis | EN       | 231    | 231    | 38       | 37       | 1.00               | 1.00              
+     | ─Éoß║ín kß╗╣ thuß║¡t d├ái / Incident Analysis | VI       | 261    | 357    | 130      | 79       | 3.42               | 2.14              
+C05  | D├áy dß║Ñu thanh / Heavy Diacritics | EN       | 110    | 110    | 14       | 14       | 1.00               | 1.00              
+     | D├áy dß║Ñu thanh / Heavy Diacritics | VI       | 134    | 175    | 64       | 35       | 4.57               | 2.50              
+C06  | ─Éß╗ïnh danh & URL / Identifiers & URLs | EN       | 127    | 127    | 37       | 37       | 1.00               | 1.00              
+     | ─Éß╗ïnh danh & URL / Identifiers & URLs | VI       | 137    | 153    | 49       | 43       | 1.32               | 1.16              
+===================================================================================================================
+
+>>> ─É├ú xuß║Ñt dß╗» liß╗çu chi tiß║┐t ra file: outputs/01_tokens.csv
+
+=== MINH Hß╗îA PH├éN Mß║óNH TOKEN (TOKEN FRAGMENTATION) TIß║╛NG VIß╗åT ===
+C├óu mß║½u: "Cß╗Ñm t├¼m kiß║┐m gß║╖p sß╗▒ cß╗æ"
+
+1. cl100k_base (16 tokens):
+   Token [00] ID=34     Raw bytes=b'C'
+   Token [01] ID=51583  Raw bytes=b'\xe1\xbb\xa5'
+   Token [02] ID=76     Raw bytes=b'm'
+   Token [03] ID=259    Raw bytes=b' t'
+   Token [04] ID=24439  Raw bytes=b'\xc3\xac'
+   Token [05] ID=76     Raw bytes=b'm'
+   Token [06] ID=20548  Raw bytes=b' ki'
+   Token [07] ID=27160  Raw bytes=b'\xe1\xba\xbf'
+   Token [08] ID=76     Raw bytes=b'm'
+   Token [09] ID=342    Raw bytes=b' g'
+   Token [10] ID=66862  Raw bytes=b'\xe1\xba\xb7'
+   Token [11] ID=79     Raw bytes=b'p'
+   Token [12] ID=274    Raw bytes=b' s'
+   Token [13] ID=62131  Raw bytes=b'\xe1\xbb\xb1'
+   Token [14] ID=272    Raw bytes=b' c'
+   Token [15] ID=28707  Raw bytes=b'\xe1\xbb\x91'
+
+2. o200k_base (8 tokens):
+   Token [00] ID=34     Raw bytes=b'C'
+   Token [01] ID=2503   Raw bytes=b'\xe1\xbb\xa5'
+   Token [02] ID=76     Raw bytes=b'm'
+   Token [03] ID=71338  Raw bytes=b' t\xc3\xacm'
+   Token [04] ID=125919 Raw bytes=b' ki\xe1\xba\xbfm'
+   Token [05] ID=119819 Raw bytes=b' g\xe1\xba\xb7p'
+   Token [06] ID=34912  Raw bytes=b' s\xe1\xbb\xb1'
+   Token [07] ID=137746 Raw bytes=b' c\xe1\xbb\x91'
+
+--- NHß║¼N X├ëT Hß╗îC THUß║¼T ---
+1. Tokenizer BPE hß╗ìc tr├¬n tß║¡p ngß╗» liß╗çu chß╗º yß║┐u l├á tiß║┐ng Anh. Do ─æ├│, c├íc tß╗½ tiß║┐ng Anh
+   th╞░ß╗¥ng t╞░╞íng ß╗⌐ng vß╗¢i 1 token (nguy├¬n tß╗½ hoß║╖c gß╗æc tß╗½ th├┤ng dß╗Ñng).
+2. Tiß║┐ng Viß╗çt sß╗¡ dß╗Ñng bß║úng m├ú UTF-8 nhiß╗üu byte (2-3 bytes/k├╜ tß╗▒ c├│ dß║Ñu). Vß╗¢i cl100k_base,
+   nhiß╗üu k├╜ tß╗▒ c├│ dß║Ñu bß╗ï ph├ón t├ích th├ánh c├íc mß║únh byte ─æ╞ín lß║╗, khiß║┐n sß╗æ token tiß║┐ng Viß╗çt
+   th╞░ß╗¥ng cao gß║Ñp 1.5 - 2.5 lß║ºn so vß╗¢i c├óu tiß║┐ng Anh c├╣ng ngh─⌐a.
+3. Tokenizer mß╗ƒ rß╗Öng o200k_base (200k tß╗½ vß╗▒ng) bß╗ò sung nhiß╗üu n-gram ─æa ng├┤n ngß╗» h╞ín,
+   gi├║p gom cß╗Ñm ├óm tiß║┐t tiß║┐ng Viß╗çt tß╗æt h╞ín, l├ám giß║úm ─æ├íng kß╗â tß╗ë lß╗ç VI/EN token.
