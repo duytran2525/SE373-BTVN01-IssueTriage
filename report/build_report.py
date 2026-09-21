@@ -114,8 +114,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--drive-link",
-        default="https://drive.google.com/drive/folders/BTVN1_IssueTriage_24520398?usp=sharing",
+        default="https://drive.google.com/drive/folders/1VnC2U7_6K6I3osFo8Xwh94QjENsGtCFi?usp=sharing",
         help="Liên kết Google Drive chứa source code (share Anyone with the link - Viewer).",
+    )
+    parser.add_argument(
+        "--github-link",
+        default="https://github.com/duytran2525/SE373-BTVN01-IssueTriage",
+        help="Liên kết GitHub Repository public.",
     )
     parser.add_argument("--name", default=DEFAULT_STUDENT_NAME, help="Họ và tên sinh viên.")
     parser.add_argument("--id", default=DEFAULT_STUDENT_ID, help="Mã số sinh viên.")
@@ -136,6 +141,7 @@ def main() -> None:
     filled = filled.replace("{{CLASS_NAME}}", args.class_name)
     filled = filled.replace("{{SUBMISSION_DATE}}", now_str)
     filled = filled.replace("{{DRIVE_LINK}}", args.drive_link)
+    filled = filled.replace("{{GITHUB_LINK}}", args.github_link)
 
     # Replace real tokens data table
     table_html = build_tokens_table_html()
