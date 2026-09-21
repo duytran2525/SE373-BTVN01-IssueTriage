@@ -7,8 +7,8 @@
   "shell": "Windows PowerShell 5.1 / pwsh",
   "openai_model": "gemini-3.5-flash-lite",
   "base_url_host": "https://generativelanguage.googleapis.com",
-  "git_sha": "349415ac1964f24fe5a7345c9fe479a5e9013d2d",
-  "timestamp_iso": "2026-09-21T12:12:21.956835+00:00",
+  "git_sha": "f40324b2960a9dae4c7dd7dd8714952b67ab2de0",
+  "timestamp_iso": "2026-09-21T12:40:48.226975+00:00",
   "pip_freeze": [
     "altair==6.3.0",
     "annotated-types==0.8.0",
