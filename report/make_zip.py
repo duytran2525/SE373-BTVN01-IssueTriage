@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(r"C:\Users\Duy\SE373\BTVN02")
 ZIP_PATH = ROOT / "BTVN1_IssueTriage_24520398.zip"
 
-IGNORE_DIRS = {".venv", "venv", "__pycache__", ".pytest_cache", ".git", ".playwright-mcp"}
+IGNORE_DIRS = {".venv", "venv", "__pycache__", ".pytest_cache", ".git", ".playwright-mcp", "tectonic_bin"}
 IGNORE_FILES = {".env", "BTVN1_IssueTriage_24520398.zip"}
 
 with zipfile.ZipFile(ZIP_PATH, "w", zipfile.ZIP_DEFLATED) as zf:

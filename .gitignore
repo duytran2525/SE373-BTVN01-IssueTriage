@@ -30,3 +30,11 @@ outputs/*.tmp
 screenshots/*.html
 report/report_filled.html
 
+# LaTeX / Tectonic temporary files and compiler
+tectonic_bin/
+*.aux
+*.toc
+*.out
+*.synctex.gz
+
+
