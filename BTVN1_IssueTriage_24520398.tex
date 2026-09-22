@@ -31,6 +31,7 @@
 % ==============================================================================
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{booktabs, tabularx, array, multirow}
+\usepackage{float}
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=1.6em, itemsep=2.5pt, topsep=2.5pt, parsep=1.5pt}
 \setlist[enumerate]{leftmargin=1.6em, itemsep=2.5pt, topsep=2.5pt, parsep=1.5pt}
@@ -217,7 +218,7 @@
       \textbf{Sinh viên thực hiện:} & Trần Đình Duy \\
       \textbf{Mã số sinh viên:}     & 24520398 \\
       \textbf{Lớp học phần:}        & SE373.R11 \\
-      \textbf{Giảng viên hướng dẫn:}& ThS. Mai Xuân Cường \\
+      \textbf{Giảng viên phụ trách:}& TS. Đỗ Trọng Hợp, ThS. Ngô Ngọc Đăng Khoa, ThS. Phạm Hoàng Hải \\
       \textbf{Ngày hoàn thành:}     & 22/09/2026 \\
       \textbf{Liên kết Google Drive:} & \url{https://drive.google.com/drive/folders/1VnC2U7_6K6I3osFo8Xwh94QjENsGtCFi} \\
       \textbf{Kho lưu trữ GitHub:}  & \url{https://github.com/duytran2525/SE373-BTVN01-IssueTriage}
@@ -249,7 +250,7 @@ Theo yêu cầu của đề bài, sản phẩm được lưu trữ chính thức
   \vspace{0.3em}
   \textbf{Kho mã nguồn GitHub (Bản phụ trợ duyệt trực tuyến):}\\
   \url{https://github.com/duytran2525/SE373-BTVN01-IssueTriage}\\
-  \small\textit{Bao gồm toàn bộ lịch sử commit, bộ bài kiểm thử tự động và tài liệu hướng dẫn.}
+  \small\textit{Lưu trữ mã nguồn cùng các mốc phát triển chính, bộ bài kiểm thử tự động và tài liệu hướng dẫn.}
 \end{calloutbox}
 
 \subsection{Hướng dẫn Chạy Nhanh Toàn bộ Hệ thống}
@@ -360,22 +361,24 @@ python 00_minimal_triage.py --issue "API dang nhap tra HTTP 503 cho toan bo nguo
 Dưới đây là nội dung trích xuất nguyên văn từ tệp nhật ký thực thi \texttt{outputs/00\_minimal\_triage.txt}:
 
 \begin{terminalcode}
---- CAU TRA LOI CUA MODEL ---
+=== DEMO 00: LLM TRIAGE TOI THIEU (PROSE OUTPUT) ===
+Model ID : gemini-3.5-flash-lite
+Issue    : API dang nhap tra HTTP 503 cho toan bo nguoi dung tu 09:15.
+------------------------------------------------------------
+Do tre phan hoi : 21.29 giay
+Token Usage     : prompt=313, completion=94, total=407
+------------------------------------------------------------
+KET QUA TRIAGE (VAN BAN TU DO):
+Duoi day la ket qua phan loai su co dua tren thong tin duoc cung cap:
+
 ```json
 {
   "component": "identity",
   "severity": "P0",
   "needs_urgent_response": true,
-  "summary": "Toan bo nguoi dung khong the dang nhap do API tra loi HTTP 503."
+  "summary": "API dang nhap tra loi HTTP 503 tren dien rong tu 09:15, lam gian doan dich vu xac thuc cua nguoi dung."
 }
 ```
-
---- METADATA CUOC GOI ---
-Model: gemini-3.5-flash-lite
-Do tre (latency): 21.29 giay
-Prompt tokens: 313
-Completion tokens: 94
-Total tokens: 407
 \end{terminalcode}
 
 \subsection{Nhận xét Đánh giá}
@@ -392,35 +395,35 @@ Về mặt tiêu thụ tài nguyên, nhà cung cấp ghi nhận tổng cộng 40
 
 Thí nghiệm tiến hành đo lường số lượng ký tự, dung lượng byte theo chuẩn UTF-8 và số lượng token trên 6 nhóm mô tả sự cố kỹ thuật song ngữ đại diện. Hai bộ tokenizer phổ biến được đưa vào so sánh là \texttt{cl100k\_base} (thế hệ GPT-4) và \texttt{o200k\_base} (thế hệ GPT-4o), thực hiện hoàn toàn offline thông qua thư viện \texttt{tiktoken}.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \small
   \rowcolors{2}{lightbg}{white}
-  \caption{Bảng đo lường ký tự, byte và token trên 6 nhóm ngữ liệu sự cố kỹ thuật}
+  \caption{Kết quả đo đạc token trên 6 nhóm ngữ liệu đối sánh giữa hai bộ Tokenizer (Yêu cầu R1)}
   \label{tab:tokens}
-  \begin{tabularx}{\textwidth}{c p{3.2cm} c c c c c c c}
+  \begin{tabularx}{\textwidth}{c p{3.8cm} c c c c c c c}
     \toprule
-    \rowcolor{primary} \color{white}\textbf{ID} & \color{white}\textbf{Chủ đề sự cố} & \color{white}\textbf{Ngôn ngữ} & \color{white}\textbf{Ký tự} & \color{white}\textbf{Bytes} & \color{white}\textbf{cl100k} & \color{white}\textbf{o200k} & \color{white}\textbf{Tỉ lệ cl} & \color{white}\textbf{Tỉ lệ o2} \\
+    \rowcolor{primary} \color{white}\textbf{ID} & \color{white}\textbf{Thể loại ngữ liệu} & \color{white}\textbf{Ngôn ngữ} & \color{white}\textbf{Ký tự} & \color{white}\textbf{Bytes} & \color{white}\textbf{cl100k} & \color{white}\textbf{o200k} & \color{white}\textbf{Tỉ lệ cl} & \color{white}\textbf{Tỉ lệ o2} \\
     \midrule
-    \textbf{C01} & Đăng nhập thất bại & EN & 57 & 57 & 12 & 12 & \multirow{2}{*}{3.50} & \multirow{2}{*}{2.25} \\
-                 &                     & VI & 74 & 84 & 42 & 27 & & \\
-    \textbf{C02} & Cổng thanh toán lỗi & EN & 62 & 62 & 13 & 13 & \multirow{2}{*}{3.23} & \multirow{2}{*}{2.23} \\
-                 &                     & VI & 79 & 91 & 42 & 29 & & \\
-    \textbf{C03} & Tìm kiếm quá tải    & EN & 57 & 57 & 13 & 13 & \multirow{2}{*}{2.92} & \multirow{2}{*}{2.54} \\
-                 &                     & VI & 73 & 87 & 38 & 33 & & \\
-    \textbf{C04} & Đồng bộ dữ liệu trễ & EN & 86 & 86 & 21 & 21 & \multirow{2}{*}{2.43} & \multirow{2}{*}{1.48} \\
-                 &                     & VI & 111 & 131 & 51 & 31 & & \\
-    \textbf{C05} & Tràn bộ nhớ đệm     & EN & 265 & 265 & 55 & 55 & \multirow{2}{*}{1.93} & \multirow{2}{*}{1.05} \\
-                 &                     & VI & 260 & 312 & 106 & 58 & & \\
-    \textbf{C06} & Đứt kết nối mạng    & EN & 259 & 259 & 55 & 54 & \multirow{2}{*}{2.15} & \multirow{2}{*}{1.78} \\
-                 &                     & VI & 252 & 306 & 118 & 96 & & \\
+    \textbf{C01} & Câu ngắn / Short Alert & EN & 47 & 47 & 10 & 10 & \multirow{2}{*}{2.80} & \multirow{2}{*}{1.80} \\
+                 &                        & VI & 57 & 69 & 28 & 18 & & \\
+    \textbf{C02} & Mô tả issue / Description & EN & 122 & 122 & 29 & 29 & \multirow{2}{*}{2.00} & \multirow{2}{*}{1.38} \\
+                 &                            & VI & 137 & 171 & 58 & 40 & & \\
+    \textbf{C03} & Log \& Stack Trace         & EN & 139 & 139 & 41 & 41 & \multirow{2}{*}{1.66} & \multirow{2}{*}{1.44} \\
+                 &                            & VI & 132 & 164 & 68 & 59 & & \\
+    \textbf{C04} & Đoạn kỹ thuật dài          & EN & 231 & 231 & 38 & 37 & \multirow{2}{*}{3.42} & \multirow{2}{*}{2.14} \\
+                 &                            & VI & 261 & 357 & 130 & 79 & & \\
+    \textbf{C05} & Dày dấu thanh              & EN & 110 & 110 & 14 & 14 & \multirow{2}{*}{4.57} & \multirow{2}{*}{2.50} \\
+                 &                            & VI & 134 & 175 & 64 & 35 & & \\
+    \textbf{C06} & Định danh \& URL           & EN & 127 & 127 & 37 & 37 & \multirow{2}{*}{1.32} & \multirow{2}{*}{1.16} \\
+                 &                            & VI & 137 & 153 & 49 & 43 & & \\
     \midrule
-    \rowcolor{cardborder} \multicolumn{2}{l}{\textbf{TỔNG TOÀN BỘ 6 CẶP}} & \textbf{EN / VI} & \textbf{786 / 849} & \textbf{786 / 1011} & \textbf{169 / 397} & \textbf{168 / 274} & \textbf{2.35} & \textbf{1.63} \\
+    \rowcolor{cardborder} \multicolumn{2}{l}{\textbf{TỔNG TOÀN BỘ 6 CẶP}} & \textbf{EN / VI} & \textbf{776 / 858} & \textbf{776 / 1089} & \textbf{169 / 397} & \textbf{168 / 274} & \textbf{2.35} & \textbf{1.63} \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \begin{screenshotbox}
     \includegraphics[width=\linewidth]{screenshots/S02a_demo01_table.png}
